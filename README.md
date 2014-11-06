@@ -1,4 +1,4 @@
-fresque
+Fresque
 =======
 
 Fedora Review Server

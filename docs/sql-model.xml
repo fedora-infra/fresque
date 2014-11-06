@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- SQL XML created by WWW SQL Designer, http://code.google.com/p/wwwsqldesigner/ -->
+<!-- Active URL: http://ondras.zarovi.cz/sql/demo/ -->
+<sql>
+<datatypes db="mysql">
+    <group label="Numeric" color="rgb(238,238,170)">
+        <type label="Integer" length="0" sql="INTEGER" quote=""/>
+        <type label="TINYINT" length="0" sql="TINYINT" quote=""/>
+        <type label="SMALLINT" length="0" sql="SMALLINT" quote=""/>
+        <type label="MEDIUMINT" length="0" sql="MEDIUMINT" quote=""/>
+        <type label="INT" length="0" sql="INT" quote=""/>
+        <type label="BIGINT" length="0" sql="BIGINT" quote=""/>
+        <type label="Decimal" length="1" sql="DECIMAL" re="DEC" quote=""/>
+        <type label="Single precision" length="0" sql="FLOAT" quote=""/>
+        <type label="Double precision" length="0" sql="DOUBLE" re="DOUBLE" quote=""/>
+    </group>
+
+    <group label="Character" color="rgb(255,200,200)">
+        <type label="Char" length="1" sql="CHAR" quote="'"/>
+        <type label="Varchar" length="1" sql="VARCHAR" quote="'"/>
+        <type label="Text" length="0" sql="MEDIUMTEXT" re="TEXT" quote="'"/>
+        <type label="Binary" length="1" sql="BINARY" quote="'"/>
+        <type label="Varbinary" length="1" sql="VARBINARY" quote="'"/>
+        <type label="BLOB" length="0" sql="BLOB" re="BLOB" quote="'"/>
+    </group>
+
+    <group label="Date &amp; Time" color="rgb(200,255,200)">
+        <type label="Date" length="0" sql="DATE" quote="'"/>
+        <type label="Time" length="0" sql="TIME" quote="'"/>
+        <type label="Datetime" length="0" sql="DATETIME" quote="'"/>
+        <type label="Year" length="0" sql="YEAR" quote=""/>
+        <type label="Timestamp" length="0" sql="TIMESTAMP" quote="'"/>
+    </group>
+    
+    <group label="Miscellaneous" color="rgb(200,200,255)">
+        <type label="ENUM" length="1" sql="ENUM" quote=""/>
+        <type label="SET" length="1" sql="SET" quote=""/>
+        <type label="Bit" length="0" sql="bit" quote=""/>
+    </group>
+</datatypes><table x="482" y="80" name="package">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="name" null="0" autoincrement="0">
+<datatype>VARCHAR(128)</datatype>
+</row>
+<row name="owner" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+<relation table="user" row="name" />
+</row>
+<row name="summary" null="0" autoincrement="0">
+<datatype>VARCHAR(255)</datatype>
+</row>
+<row name="state" null="0" autoincrement="0">
+<datatype>VARCHAR(32)</datatype>
+<default>'new'</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="133" y="175" name="distribution">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="name" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="770" y="301" name="user">
+<row name="name" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+</row>
+<row name="fullname" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<key type="PRIMARY" name="">
+<part>name</part>
+</key>
+</table>
+<table x="139" y="86" name="target_distributions">
+<row name="package_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="package" row="id" />
+</row>
+<row name="distribution_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="distribution" row="id" />
+</row>
+<key type="PRIMARY" name="">
+<part>package_id</part>
+<part>distribution_id</part>
+</key>
+</table>
+<table x="319" y="244" name="review">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="package_id" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="package" row="id" />
+</row>
+<row name="commit_id" null="0" autoincrement="0">
+<datatype>VARCHAR</datatype>
+</row>
+<row name="date_start" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<row name="date_end" null="1" autoincrement="0">
+<datatype>DATETIME</datatype>
+<default>NULL</default></row>
+<row name="srpm_filename" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="spec_filename" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="active" null="0" autoincrement="0">
+<datatype>bit</datatype>
+<default>False</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="539" y="400" name="comment">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="review_id" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="review" row="id" />
+</row>
+<row name="author" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+<relation table="user" row="name" />
+</row>
+<row name="date" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<row name="line_number" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="relevant" null="0" autoincrement="0">
+<datatype>bit</datatype>
+<default>False</default></row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+</table>
+<table x="536" y="305" name="reviewers">
+<row name="review_id" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="review" row="id" />
+</row>
+<row name="reviewer_name" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+<relation table="user" row="name" />
+</row>
+<key type="PRIMARY" name="">
+<part>review_id</part>
+<part>reviewer_name</part>
+</key>
+</table>
+<table x="811" y="81" name="action">
+<row name="id" null="1" autoincrement="1">
+<datatype>INTEGER</datatype>
+<default>NULL</default></row>
+<row name="package_id" null="0" autoincrement="0">
+<datatype>INTEGER</datatype>
+<relation table="package" row="id" />
+</row>
+<row name="review_id" null="1" autoincrement="0">
+<datatype>INTEGER</datatype>
+<default>NULL</default><relation table="review" row="id" />
+</row>
+<row name="name" null="0" autoincrement="0">
+<datatype>VARCHAR</datatype>
+</row>
+<row name="change" null="1" autoincrement="0">
+<datatype>VARCHAR</datatype>
+<default>NULL</default></row>
+<row name="author" null="0" autoincrement="0">
+<datatype>VARCHAR(64)</datatype>
+<relation table="user" row="name" />
+</row>
+<row name="date" null="0" autoincrement="0">
+<datatype>DATETIME</datatype>
+</row>
+<key type="PRIMARY" name="">
+<part>id</part>
+</key>
+<comment>Log of actions such as creation of package, of reviews, state changes, etc.</comment>
+</table>
+</sql>
+
