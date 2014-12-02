@@ -7,8 +7,10 @@ This module and all its files contains all the operations independant of the
 framework and should be completely covered in unit-tests.
 '''
 
+from __future__ import absolute_import, unicode_literals, print_function
+
 import sqlalchemy as sa
-import fresque.lib.database as db
+from fresque.lib import models as model
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import scoped_session
