@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<div class="jumbotron">
+    <h1>Fedora Review Server</h1>
+    <p>
+        Where packages are reviewed before inclusion.
+        <a href="https://fedoraproject.org/wiki/Infrastructure" role="button">Learn more</a>
+    </p>
+</div>
+
+
+<div class="row">
+<div class="col-xs-12 text-center">
+    <form class="form-inline" role="form" action="{{ url_for('search') }}">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control input-lg"
+                   placeholder="Search packages..." autofocus />
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-lg btn-primary">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                </button>
+            </span>
+        </div>
+    </form>
+</div>
+</div>
+
+<div class="row">
+<h2>Recent activity</h2>
+{# TODO: Make a macro for those widgets #}
+
+<div class="col-xs-12 col-sm-6 col-lg-4">
+    <h3>Recently submitted</h3>
+    <ul>
+        <li><a href="#">fuse-ext2</a> - Ext2/3/4 file-system support for FUSE</li>
+        <li><a href="#">Coin3</a> - High-level 3D visualization library</li>
+        <li><a href="#">openrave</a> - Open Robotics Automation Virtual Environment</li>
+        <li><a href="#">mysql-sandbox</a> - Quick painless install of side by side MySQL server in isolation</li>
+        <li><a href="#">doxygenfilter</a> - A Perl-based input filter for doxygen to allow it to be used with Perl files.</li>
+    </ul>
+</div>
+
+<div class="col-xs-12 col-sm-6 col-lg-4">
+    <h3>Updated reviews</h3>
+    <ul>
+        <li><a href="#">fuse-ext2</a> - Ext2/3/4 file-system support for FUSE</li>
+        <li><a href="#">Coin3</a> - High-level 3D visualization library</li>
+        <li><a href="#">openrave</a> - Open Robotics Automation Virtual Environment</li>
+        <li><a href="#">mysql-sandbox</a> - Quick painless install of side by side MySQL server in isolation</li>
+        <li><a href="#">doxygenfilter</a> - A Perl-based input filter for doxygen to allow it to be used with Perl files.</li>
+    </ul>
+</div>
+
+</div>
+
+
+{% endblock %}
