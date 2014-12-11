@@ -19,15 +19,18 @@ Base = declarative_base()
 class Package(Base):
     __tablename__ = 'packages'
 
-    id      = sa.Column(sa.Integer, primary_key=True)
-    name    = sa.Column(sa.String(128), nullable=False, index=True, unique=True)
-    summary = sa.Column(sa.String(255), nullable=False)
-    owner   = sa.Column(sa.String(255),
-                        sa.ForeignKey("users.name", onupdate="cascade"))
+    id       = sa.Column(sa.Integer, primary_key=True)
+    name     = sa.Column(sa.String(128),
+                         nullable=False, index=True, unique=True)
+    summary  = sa.Column(sa.String(255), nullable=False)
+    owner    = sa.Column(sa.String(255),
+                         sa.ForeignKey("users.name", onupdate="cascade"))
     # The state could use an Enum type, but we don't need the space-savings and
     # strict model checks that come with the added complexity in migrations.
-    state   = sa.Column(sa.String(64),
-                        nullable=False, default="new", index=True)
+    state    = sa.Column(sa.String(64),
+                         nullable=False, default="new", index=True)
+    requires = sa.Column(sa.Integer,
+                         sa.ForeignKey("packages.id", onupdate="cascade")
 
     def __repr__(self):
         return '<Package %r>' % (self.name)
@@ -86,9 +89,18 @@ class Reviewer(Base):
     __tablename__ = 'reviewers'
 
     review_id     = sa.Column(sa.Integer,
-                              sa.ForeignKey('packages.id'), primary_key=True)
+                              sa.ForeignKey('reviews.id'), primary_key=True)
     reviewer_name = sa.Column(sa.String(255),
                               sa.ForeignKey('users.name'), primary_key=True)
+
+
+class Watcher(Base):
+    __tablename__ = 'watchers'
+
+    package_id   = sa.Column(sa.Integer,
+                             sa.ForeignKey('packages.id'), primary_key=True)
+    watcher_name = sa.Column(sa.String(255),
+                             sa.ForeignKey('users.name'), primary_key=True)
 
 
 class Comment(Base):
