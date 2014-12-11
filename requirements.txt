@@ -1,4 +1,5 @@
 Flask
-Flask-SQLAlchemy
-flask-migrate
 python-fedora
+python-openid
+python-openid-cla
+python-openid-teams

@@ -13,7 +13,7 @@ import sys
 import urlparse
 
 import flask
-from flask.ext.fas_openid import FAS
+from flask.ext.fas_openid import FAS # pylint: disable=no-name-in-module,import-error
 
 APP = flask.Flask(__name__)
 APP.config.from_object('fresque.default_config')
@@ -34,13 +34,25 @@ APP.logger.addHandler(STDERR_LOG)
 
 LOG = APP.logger
 
-import fresque.lib
 import fresque.proxy
-
-
 APP.wsgi_app = fresque.proxy.ReverseProxied(APP.wsgi_app)
-SESSION = fresque.lib.create_session(APP.config['SQLALCHEMY_DATABASE_URI'])
 
+
+# Database
+
+from fresque.lib.database import create_session
+
+@APP.before_request
+def before_request():
+    flask.g.db = create_session(APP.config["SQLALCHEMY_DATABASE_URI"])
+
+@APP.teardown_appcontext
+def shutdown_session(exception=None): # pylint: disable=unused-argument
+    if hasattr(flask.g, "db"):
+        flask.g.db.remove()
+
+
+# Utility functions
 
 def is_authenticated():
     """ Returns wether a user is authenticated or not.
@@ -59,4 +71,3 @@ def is_safe_url(target):
         ref_url.netloc == test_url.netloc
 
 from fresque import views
-

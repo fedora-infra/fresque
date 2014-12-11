@@ -1,9 +1,12 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
 
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__)) # pylint: disable=invalid-name
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, '..', 'fresque.sqlite')
-#SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(
+    basedir, '..', 'fresque.sqlite')
+# SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 SECRET_KEY = 'Change-me-Im-famous'
 

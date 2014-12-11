@@ -7,6 +7,9 @@ redirects are using ``https``.
 Source: http://flask.pocoo.org/snippets/35/ by Peter Hansen
 '''
 
+from __future__ import absolute_import, unicode_literals, print_function
+
+# pylint: disable=too-few-public-methods
 
 class ReverseProxied(object):  # pragma: no cover
     '''Wrap the application in this middleware and configure the
