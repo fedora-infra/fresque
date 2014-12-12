@@ -9,7 +9,8 @@ from __future__ import absolute_import, unicode_literals, print_function
 import flask
 from flask.ext.fas import fas_login_required
 
-from fresque import APP, FAS
+from fresque import APP, FAS, forms
+from fresque.lib.models import Distribution
 
 
 @APP.route("/")
@@ -20,10 +21,44 @@ def index():
 def search():
     raise NotImplementedError
 
+@APP.route("/packages")
+def packages():
+    return "all packages"
+
+@APP.route("/packages/<name>")
+def package(name):
+    return "package %s" % name
+
+@APP.route("/pacakges/<pname>/reviews/")
+def reviews(pname):
+    return "review for package %d" % pid
+
+@APP.route("/pacakges/<pname>/reviews/<int:rid>")
+def review(pname, rid):
+    return "review %d" % rid
+
+
 @APP.route("/new")
 @fas_login_required
 def newpackage():
-    return "newpackage"
+    distributions = flask.g.db.query(
+        Distribution).order_by(Distribution.id).all()
+    form = forms.NewPackage()
+    form.distributions.choices = [ (d.id, d.name) for d in distributions ]
+    form.distributions.default = [ d.id for d in distributions ]
+    if form.validate_on_submit():
+        pkg = Package(
+            name=form.name.data,
+            summary=form.summary.data,
+            description=form.description.data,
+            owner=flask.g.fas_user.username,
+            )
+        g.db.add(pkg)
+        pkg.distributions = form.distributions.data
+        flask.flash("Package successfully created!", "success")
+        return flask.redirect(flask.url_for('package', pid=pkg.name))
+    return flask.render_template('new.html', form=form)
+
 
 @APP.route("/my/packages")
 @fas_login_required
@@ -35,9 +70,6 @@ def user_packages():
 def user_reviews():
     return "user_reviews"
 
-@APP.route("/review/<int:rid>")
-def review(rid):
-    return "review %d" % rid
 
 # Login / logout
 

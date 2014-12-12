@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+
+
+{% macro render_field(field) %}
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+        <label for="{{ field.id }}" class="col-sm-2 control-label">
+            {{ field.label.text }}
+        </label>
+        <div class="col-sm-10">
+            {{ field(**kwargs) }}
+            {% if field.errors %}
+            <span class="help-block">
+                {% for error in field.errors %}
+                {{ error }}.
+                {% endfor %}
+            </span>
+            {% endif %}
+        </div>
+    </div>
+{% endmacro %}
+
+
+{% block content %}
+
+<div class="row">
+
+<form class="form-horizontal" role="form">
+    {{ render_field(form.name, class_="form-control", autofocus=True) }}
+    {{ render_field(form.summary, class_="form-control") }}
+    {{ render_field(form.description, class_="form-control") }}
+    {{ render_field(form.distributions) }}
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10 submit">
+            <button type="submit" class="btn btn-primary">Create</button>
+        </div>
+    </div>
+</form>
+
+</div>
+
+
+{% endblock %}

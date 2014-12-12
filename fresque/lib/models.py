@@ -11,12 +11,16 @@ Base = declarative_base()
 
 
 class Package(Base):
+    """
+    A package proposed for review and inclusion.
+    """
     __tablename__ = 'packages'
 
     id       = sa.Column(sa.Integer, primary_key=True)
     name     = sa.Column(sa.String(128),
                          nullable=False, index=True, unique=True)
     summary  = sa.Column(sa.String(255), nullable=False)
+    description = sa.Column(sa.Text, nullable=False)
     owner    = sa.Column(sa.String(255))
     # The state could use an Enum type, but we don't need the space-savings and
     # strict model checks that come with the added complexity in migrations.
@@ -24,6 +28,8 @@ class Package(Base):
                          nullable=False, default="new", index=True)
     requires = sa.Column(sa.Integer,
                          sa.ForeignKey("packages.id", onupdate="cascade"))
+    distributions = sa.orm.relationship("Distribution", backref="packages",
+                                        secondary="target_distributions")
 
     def __repr__(self):
         return '<Package %r>' % (self.name)
