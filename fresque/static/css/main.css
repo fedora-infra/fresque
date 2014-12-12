@@ -1,0 +1,20 @@
+/*
+ * Generic
+ */
+
+
+.flashmessage > div {
+    text-align: center;
+}
+.flashmessage .alert {
+    display: inline-block;
+}
+.flashmessage.dismissible {
+    position: absolute;
+    left: 50%;
+}
+.flashmessage.dismissible .alert-dismissible {
+    position: relative;
+    left: -50%;
+    z-index: 5;
+}

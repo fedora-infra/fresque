@@ -10,12 +10,6 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-# class User(sa.Model):
-#     id = sa.Column(sa.Integer, primary_key=True)
-#     nickname = sa.Column(sa.String(64), index=True, unique=True)
-#     email = sa.Column(sa.String(120), index=True, unique=True)
-
-
 class Package(Base):
     __tablename__ = 'packages'
 
@@ -23,14 +17,13 @@ class Package(Base):
     name     = sa.Column(sa.String(128),
                          nullable=False, index=True, unique=True)
     summary  = sa.Column(sa.String(255), nullable=False)
-    owner    = sa.Column(sa.String(255),
-                         sa.ForeignKey("users.name", onupdate="cascade"))
+    owner    = sa.Column(sa.String(255))
     # The state could use an Enum type, but we don't need the space-savings and
     # strict model checks that come with the added complexity in migrations.
     state    = sa.Column(sa.String(64),
                          nullable=False, default="new", index=True)
     requires = sa.Column(sa.Integer,
-                         sa.ForeignKey("packages.id", onupdate="cascade")
+                         sa.ForeignKey("packages.id", onupdate="cascade"))
 
     def __repr__(self):
         return '<Package %r>' % (self.name)
@@ -53,17 +46,6 @@ class TargetDistribution(Base):
         sa.Integer, sa.ForeignKey('packages.id'), primary_key=True)
     distribution_id = sa.Column(
         sa.String(32), sa.ForeignKey('distributions.id'), primary_key=True)
-
-
-class User(Base):
-    __tablename__ = 'users'
-    # From FAS
-    name     = sa.Column(sa.String(255), primary_key=True)
-    fullname = sa.Column(sa.String(255))
-    email    = sa.Column(sa.String(255))
-
-    def __repr__(self):
-        return '<User %r>' % (self.name)
 
 
 class Review(Base):
@@ -90,8 +72,7 @@ class Reviewer(Base):
 
     review_id     = sa.Column(sa.Integer,
                               sa.ForeignKey('reviews.id'), primary_key=True)
-    reviewer_name = sa.Column(sa.String(255),
-                              sa.ForeignKey('users.name'), primary_key=True)
+    reviewer_name = sa.Column(sa.String(255), primary_key=True)
 
 
 class Watcher(Base):
@@ -99,8 +80,7 @@ class Watcher(Base):
 
     package_id   = sa.Column(sa.Integer,
                              sa.ForeignKey('packages.id'), primary_key=True)
-    watcher_name = sa.Column(sa.String(255),
-                             sa.ForeignKey('users.name'), primary_key=True)
+    watcher_name = sa.Column(sa.String(255), primary_key=True)
 
 
 class Comment(Base):
@@ -110,8 +90,7 @@ class Comment(Base):
     review_id   = sa.Column(sa.Integer,
                             sa.ForeignKey("reviews.id",
                                 ondelete="cascade", onupdate="cascade"))
-    author      = sa.Column(sa.String(255),
-                            sa.ForeignKey("users.name", onupdate="cascade"))
+    author      = sa.Column(sa.String(255))
     date        = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
     line_number = sa.Column(sa.Integer)
     # relevant: has the comment been replied to?

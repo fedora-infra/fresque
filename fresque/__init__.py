@@ -13,7 +13,7 @@ import sys
 import urlparse
 
 import flask
-from flask.ext.fas_openid import FAS # pylint: disable=no-name-in-module,import-error
+import flask_fas_openid
 
 APP = flask.Flask(__name__)
 APP.config.from_object('fresque.default_config')
@@ -22,7 +22,7 @@ if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
 
 
 # Set up FAS extension
-FAS = FAS(APP)
+FAS = flask_fas_openid.FAS(APP)
 
 
 # TODO: Add email handler (except on debug mode)
