@@ -33,7 +33,6 @@ def select_multi_checkbox(field, ul_class='', **kwargs):
         options = dict(kwargs, name=field.name, value=value, id=choice_id)
         if checked:
             options['checked'] = 'checked'
-        print(value, checked)
         html.append('<div class="checkbox">\n  <label>')
         html.append('<input %s /> ' % html_params(**options))
         html.append(label)
@@ -68,7 +67,7 @@ class NewPackage(Form):
                     existing_package])
     summary       = StringField("Summary", filters=[strip],
         validators=[validators.InputRequired(), validators.Length(max=255)])
-    description   = TextAreaField("Summary", filters=[strip],
+    description   = TextAreaField("Description", filters=[strip],
         validators=[validators.InputRequired()])
     distributions = MultipleCheckboxesField("Distributions",
         widget=select_multi_checkbox)
