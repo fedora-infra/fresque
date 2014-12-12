@@ -19,7 +19,6 @@ sdist/
 *.egg
 
 # database
-var/fresque.db
 *.sqlite
 
 # PyInstaller

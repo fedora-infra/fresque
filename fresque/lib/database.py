@@ -9,6 +9,8 @@ from __future__ import absolute_import, unicode_literals, print_function
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+from fresque.lib import models
+
 
 def create_session(db_url, debug=False, pool_recycle=3600):
     """ Create the Session object to use to query the database.
@@ -31,7 +33,7 @@ def create_session(db_url, debug=False, pool_recycle=3600):
     return session
 
 
-def create_tables(db_url, alembic_ini=None, debug=False):
+def create_tables(config, debug=False):
     """ Create the tables in the database using the information from the
     url obtained.
 
@@ -46,9 +48,9 @@ def create_tables(db_url, alembic_ini=None, debug=False):
     :return a session that can be used to query the database.
 
     """
-    from fresque.lib.models import Base
+    db_url = config['SQLALCHEMY_DATABASE_URI']
     engine = sa.create_engine(db_url, echo=debug)
-    Base.metadata.create_all(engine)
+    models.Base.metadata.create_all(engine)
     # engine.execute(collection_package_create_view(driver=engine.driver))
     if db_url.startswith('sqlite:'):
         # Ignore the warning about con_record
@@ -58,7 +60,8 @@ def create_tables(db_url, alembic_ini=None, debug=False):
             dbapi_con.execute('pragma foreign_keys=ON')
         sa.event.listen(engine, 'connect', _fk_pragma_on_connect)
 
-    if alembic_ini is not None:  # pragma: no cover
+    alembic_ini = config.get('PATH_ALEMBIC_INI')
+    if alembic_ini:  # pragma: no cover
         # then, load the Alembic configuration and generate the
         # version table, "stamping" it with the most recent rev:
 
@@ -68,3 +71,12 @@ def create_tables(db_url, alembic_ini=None, debug=False):
         from alembic import command
         alembic_cfg = Config(alembic_ini)
         command.stamp(alembic_cfg, "head")
+
+    # Add missing distributions
+    session = create_session(db_url, debug=debug)
+    for d_id, d_name in config["DISTRIBUTIONS"].items():
+        distro = session.query(models.Distribution).get(d_id)
+        if distro:
+            continue
+        session.add(models.Distribution(id=d_id, name=d_name))
+    session.commit()
