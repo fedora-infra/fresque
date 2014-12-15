@@ -70,4 +70,22 @@ def is_safe_url(target):
     return test_url.scheme in ('http', 'https') and \
         ref_url.netloc == test_url.netloc
 
+
+def is_fresque_admin(user):
+    """ Is the user a fresque admin.
+    """
+    if not user:
+        return False
+
+    if not user.cla_done or len(user.groups) < 1:
+        return False
+
+    admins = APP.config['ADMIN_GROUP']
+    if isinstance(admins, basestring):
+        admins = [admins]
+    admins = set(admins)
+
+    return len(admins.intersection(set(user.groups))) > 0
+
+
 from fresque import views
