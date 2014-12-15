@@ -8,8 +8,9 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import flask
 from flask.ext.fas import fas_login_required
+from six import string_types
 
-from fresque import APP, FAS, forms
+from fresque import APP, FAS, forms, is_safe_url, is_authenticated
 from fresque.lib.models import Package, Distribution
 
 
@@ -81,16 +82,22 @@ def user_reviews():
 
 @APP.route('/login', methods=['GET', 'POST'])
 def auth_login():
-    # Your application should probably do some checking to make sure the URL
-    # given in the next request argument is sane. (For example, having next set
-    # to the login page will cause a redirect loop.) Some more information:
-    # http://flask.pocoo.org/snippets/62/
-    next_url = flask.request.args.get("next", flask.url_for("index"))
-    # If user is already logged in, return them to where they were last
-    if flask.g.fas_user:
-        flask.flash("Welcome {}!".format(flask.g.fas_user.username), "success")
+    next_url = flask.url_for('index')
+    if 'next' in flask.request.values:
+        url = flask.request.values['next']
+        if is_safe_url(url) and url != flask.url_for('auth_login'):
+            next_url = url
+
+    if is_authenticated():
         return flask.redirect(next_url)
-    return FAS.login(return_url=next_url)
+
+    required_groups = set(APP.config['REQUIRED_GROUPS'])
+    if isinstance(APP.config['ADMIN_GROUPS'], string_types):
+        required_groups.add(APP.config['ADMIN_GROUPS'])
+    else:
+        required_groups.update(APP.config['ADMIN_GROUPS'])
+    return FAS.login(return_url=next_url, groups=required_groups)
+
 
 @APP.route('/logout')
 def logout():
