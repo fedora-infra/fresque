@@ -21,7 +21,12 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(
 # secret key used to generate unique csrf token
 SECRET_KEY = 'Change-me-Im-famous'
 
+# If the authentication method is `fas`, groups in which should be the user
+# to be recognized as an admin.
+ADMIN_GROUP = ('sysadmin-main', )
 
+
+# Available distributions
 DISTRIBUTIONS = {
     "f21": "Fedora 21",
     "f22": "Fedora 22",
@@ -31,6 +36,8 @@ DISTRIBUTIONS = {
     "rawhide": "Rawhide",
 }
 
+
+# Package states
 STATES = {
     "new": "just created", # No review yet. Don't delete this one.
     "review": "under review",
