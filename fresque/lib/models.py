@@ -9,6 +9,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# TODO: add relationships
 
 class Package(Base):
     """
@@ -16,23 +17,38 @@ class Package(Base):
     """
     __tablename__ = 'packages'
 
-    id       = sa.Column(sa.Integer, primary_key=True)
-    name     = sa.Column(sa.String(128),
-                         nullable=False, index=True, unique=True)
-    summary  = sa.Column(sa.String(255), nullable=False)
+    id          = sa.Column(sa.Integer, primary_key=True)
+    name        = sa.Column(sa.String(128),
+                            nullable=False, index=True, unique=True)
+    summary     = sa.Column(sa.String(255), nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    owner    = sa.Column(sa.String(255))
+    owner       = sa.Column(sa.String(255))
     # The state could use an Enum type, but we don't need the space-savings and
     # strict model checks that come with the added complexity in migrations.
-    state    = sa.Column(sa.String(64),
-                         nullable=False, default="new", index=True)
-    requires = sa.Column(sa.Integer,
-                         sa.ForeignKey("packages.id", onupdate="cascade"))
+    state       = sa.Column(sa.String(64),
+                            nullable=False, default="new", index=True)
+    submitted   = sa.Column(sa.DateTime,
+                            index=True, nullable=False, default=sa.func.now())
+    requires    = sa.Column(sa.Integer,
+                            sa.ForeignKey("packages.id", onupdate="cascade"))
     distributions = sa.orm.relationship("Distribution", backref="packages",
                                         secondary="target_distributions")
+    reviews     = sa.orm.relationship("Review", backref="package",
+                                      order_by="Review.id")
 
     def __repr__(self):
         return '<Package %r>' % (self.name)
+
+    @property
+    def last_review(self):
+        return self.reviews.desc().first()
+
+    @property
+    def last_review_activity(self):
+        # TODO: cache this
+        req = sa.orm.object_session(self).query("Comment.date").join(
+            "Review").with_parent(self).order_by("Comment.date").desc().first()
+        return req.date
 
 
 class Distribution(Base):

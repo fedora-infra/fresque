@@ -1,0 +1,21 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% if packages|length == 0 %}
+<p>You don't own any packages here.</p>
+{% else %}
+
+<ul>
+{% for package in packages %}
+    {% with rev=package.last_review %}
+    <li>
+        <a href="{{ url_for("package", name=package.name) }}">{{ package.name }}</a>
+        (last review: <a href="{{ url_for("review", pname=package.name, rid=rev.id) }}">{{ rev.id }}</a>)
+    </li>
+    {% endwith %}
+{% endfor %}
+
+{% endif %}
+
+{% endblock %}

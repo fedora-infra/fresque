@@ -65,7 +65,11 @@ def newpackage():
 @APP.route("/my/packages")
 @fas_login_required
 def user_packages():
-    return flask.render_template("simple.html", content="user_packages")
+    packages = flask.g.db.query(Package).filter_by(
+        owner=flask.g.fas_user.username).all()
+    # TODO: filter-out included packages (state == done)
+    packages.sort(key=lambda p: p.last_review_activity)
+    return flask.render_template("user/packages.html", packages=packages)
 
 @APP.route("/my/reviews")
 @fas_login_required

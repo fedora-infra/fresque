@@ -18,3 +18,10 @@ DISTRIBUTIONS = {
     "el8": "Enterprise Linux 8",
     "rawhide": "Rawhide",
 }
+
+STATES = {
+    "new": "just created", # No review yet. Don't delete this one.
+    "review": "under review",
+    "rejected": "rejected",
+    "done": "included",
+}
