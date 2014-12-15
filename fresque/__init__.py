@@ -88,4 +88,20 @@ def is_fresque_admin(user):
     return len(admins.intersection(set(user.groups))) > 0
 
 
+def admin_required(function):
+    """ Flask decorator to ensure that the user is logged in. """
+    @wraps(function)
+    def decorated_function(*args, **kwargs):
+        ''' Wrapped function actually checking if the user is logged in.
+        '''
+        if not is_authenticated():
+            return flask.redirect(flask.url_for(
+                'auth_login', next=flask.request.url))
+        elif not is_fresque_admin(flask.g.fas_user):
+            flask.flash('You are not an admin', 'error')
+            return flask.redirect(flask.url_for('index'))
+        return function(*args, **kwargs)
+    return decorated_function
+
+
 from fresque import views
