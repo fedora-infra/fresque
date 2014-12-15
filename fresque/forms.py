@@ -6,6 +6,8 @@ Forms used in the web interface
 
 from __future__ import absolute_import, unicode_literals, print_function
 
+import re
+
 import flask
 from flask_wtf import Form
 from wtforms import (BooleanField, StringField, TextAreaField,
@@ -56,18 +58,35 @@ class MultipleCheckboxesField(SelectMultipleField):
 
 
 def existing_package(form, field):
-    if flask.g.query(Package).filter_by(name=field.data).count() != 0:
-        raise validators.ValidationError("Package already exists")
+    if flask.g.db.query(Package).filter_by(name=field.data).count() != 0:
+        raise validators.ValidationError("Package already exists.")
+
+RPM_NAME_RE = re.compile('^[\w_.-]+$') # TODO: use the real RPM regex
+def package_naming_format(form, field):
+    if not RPM_NAME_RE.match(field.data):
+        raise validators.ValidationError(
+            "Only letters, numbers, dots, dashes and underscores are allowed "
+            "in the package name.")
+
+class ListMinLength(object):
+    def __init__(self, minlength):
+        self.minlength = int(minlength)
+    def __call__(self, form, field):
+        if len(field.data) < self.minlength:
+            raise validators.ValidationError(
+                "You must choose at least %d of them." % self.minlength)
 
 
 class NewPackage(Form):
     name          = StringField("Name", filters=[strip],
         validators=[validators.InputRequired(),
                     validators.Length(max=128),
-                    existing_package])
+                    existing_package,
+                    package_naming_format])
     summary       = StringField("Summary", filters=[strip],
         validators=[validators.InputRequired(), validators.Length(max=255)])
     description   = TextAreaField("Description", filters=[strip],
         validators=[validators.InputRequired()])
     distributions = MultipleCheckboxesField("Distributions",
+        validators=[ListMinLength(1)],
         widget=select_multi_checkbox)

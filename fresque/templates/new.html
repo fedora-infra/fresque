@@ -11,7 +11,7 @@
             {% if field.errors %}
             <span class="help-block">
                 {% for error in field.errors %}
-                {{ error }}.
+                {{ error }}
                 {% endfor %}
             </span>
             {% endif %}
@@ -24,11 +24,17 @@
 
 <div class="row">
 
-<form class="form-horizontal" role="form">
+<form class="form-horizontal" role="form" method="post">
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        There are errors in the form, please fix them.
+    </div>
+    {% endif %}
     {{ render_field(form.name, class_="form-control", autofocus=True) }}
     {{ render_field(form.summary, class_="form-control") }}
     {{ render_field(form.description, class_="form-control") }}
     {{ render_field(form.distributions) }}
+    {{ form.hidden_tag() }}
     <div class="form-group">
         <div class="col-sm-offset-2 col-md-offset-3 col-sm-6 col-md-6 submit">
             <button type="submit" class="btn btn-primary">Create</button>

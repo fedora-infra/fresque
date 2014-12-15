@@ -70,7 +70,7 @@
                         </ul>
                     </li>
                     {% else %}
-                    <li><a href="{{ url_for("login", next=request.url) }}">Login</a></li>
+                    <li><a href="{{ url_for("auth_login", next=request.url) }}">Login</a></li>
                     {% endif %}
                 </ul>
             </div><!-- /.navbar-collapse -->

@@ -10,7 +10,7 @@ import flask
 from flask.ext.fas import fas_login_required
 
 from fresque import APP, FAS, forms
-from fresque.lib.models import Distribution
+from fresque.lib.models import Package, Distribution
 
 
 @APP.route("/")
@@ -23,22 +23,22 @@ def search():
 
 @APP.route("/packages")
 def packages():
-    return "all packages"
+    return flask.render_template("simple.html", content="all packages")
 
 @APP.route("/packages/<name>")
 def package(name):
-    return "package %s" % name
+    return flask.render_template("simple.html", content="package %s" % name)
 
 @APP.route("/pacakges/<pname>/reviews/")
 def reviews(pname):
-    return "review for package %d" % pid
+    return flask.render_template("simple.html", content="review for package %s" % pname)
 
 @APP.route("/pacakges/<pname>/reviews/<int:rid>")
 def review(pname, rid):
-    return "review %d" % rid
+    return flask.render_template("simple.html", content="review %d" % rid)
 
 
-@APP.route("/new")
+@APP.route("/new", methods=["GET", "POST"])
 @fas_login_required
 def newpackage():
     distributions = flask.g.db.query(
@@ -53,28 +53,30 @@ def newpackage():
             description=form.description.data,
             owner=flask.g.fas_user.username,
             )
-        g.db.add(pkg)
-        pkg.distributions = form.distributions.data
+        flask.g.db.add(pkg)
+        pkg.distributions = flask.g.db.query(Distribution).filter(
+            Distribution.id.in_(form.distributions.data)).all()
+        flask.g.db.commit()
         flask.flash("Package successfully created!", "success")
-        return flask.redirect(flask.url_for('package', pid=pkg.name))
+        return flask.redirect(flask.url_for('package', name=pkg.name))
     return flask.render_template('new.html', form=form)
 
 
 @APP.route("/my/packages")
 @fas_login_required
 def user_packages():
-    return "user_packages"
+    return flask.render_template("simple.html", content="user_packages")
 
 @APP.route("/my/reviews")
 @fas_login_required
 def user_reviews():
-    return "user_reviews"
+    return flask.render_template("simple.html", content="user_reviews")
 
 
 # Login / logout
 
 @APP.route('/login', methods=['GET', 'POST'])
-def login():
+def auth_login():
     # Your application should probably do some checking to make sure the URL
     # given in the next request argument is sane. (For example, having next set
     # to the login page will cause a redirect loop.) Some more information:
