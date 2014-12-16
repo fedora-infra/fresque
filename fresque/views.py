@@ -10,7 +10,9 @@ import flask
 from flask.ext.fas import fas_login_required
 from six import string_types
 
-from fresque import APP, FAS, forms, is_safe_url, is_authenticated
+from fresque import APP, FAS
+from fresque import forms
+from fresque.utils import is_safe_url, is_authenticated
 from fresque.lib.models import Package, Distribution
 
 
