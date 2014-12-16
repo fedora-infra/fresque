@@ -4,3 +4,4 @@ python-openid
 python-openid-cla
 python-openid-teams
 Flask-WTF
+six

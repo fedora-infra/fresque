@@ -14,6 +14,8 @@ import urlparse
 
 import flask
 import flask_fas_openid
+from six import string_types
+
 
 APP = flask.Flask(__name__)
 APP.config.from_object('fresque.default_config')
@@ -81,7 +83,7 @@ def is_fresque_admin(user):
         return False
 
     admins = APP.config['ADMIN_GROUP']
-    if not isinstance(admins, list) and not isinstance(admins, set):
+    if isinstance(admins, string_types):
         admins = [admins]
     admins = set(admins)
 
