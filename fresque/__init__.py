@@ -81,7 +81,7 @@ def is_fresque_admin(user):
         return False
 
     admins = APP.config['ADMIN_GROUP']
-    if isinstance(admins, basestring):
+    if not isinstance(admins, list) and not isinstance(admins, set):
         admins = [admins]
     admins = set(admins)
 
