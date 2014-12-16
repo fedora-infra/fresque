@@ -11,9 +11,8 @@ from flask.ext.fas import fas_login_required
 from six import string_types
 
 from fresque import APP, FAS
-from fresque import forms
 from fresque.utils import is_safe_url, is_authenticated
-from fresque.lib.models import Package, Distribution
+from fresque.lib import views
 
 
 @APP.route("/")
@@ -44,35 +43,22 @@ def review(pname, rid):
 @APP.route("/new", methods=["GET", "POST"])
 @fas_login_required
 def newpackage():
-    distributions = flask.g.db.query(
-        Distribution).order_by(Distribution.id).all()
-    form = forms.NewPackage()
-    form.distributions.choices = [ (d.id, d.name) for d in distributions ]
-    form.distributions.default = [ d.id for d in distributions ]
-    if form.validate_on_submit():
-        pkg = Package(
-            name=form.name.data,
-            summary=form.summary.data,
-            description=form.description.data,
-            owner=flask.g.fas_user.username,
-            )
-        flask.g.db.add(pkg)
-        pkg.distributions = flask.g.db.query(Distribution).filter(
-            Distribution.id.in_(form.distributions.data)).all()
-        flask.g.db.commit()
-        flask.flash("Package successfully created!", "success")
-        return flask.redirect(flask.url_for('package', name=pkg.name))
-    return flask.render_template('new.html', form=form)
+    result = views.newpackage(
+        flask.g.db, flask.request.method, flask.request.form,
+        flask.g.fas_user.username)
+    for msg, style in result.flash:
+        flask.flash(msg, style)
+    if result.redirect:
+        return flask.redirect(flask.url_for(
+            result.redirect[0], **result.redirect[1]))
+    return flask.render_template('new.html', **result.context)
 
 
 @APP.route("/my/packages")
 @fas_login_required
 def user_packages():
-    packages = flask.g.db.query(Package).filter_by(
-        owner=flask.g.fas_user.username).all()
-    # TODO: filter-out included packages (state == done)
-    packages.sort(key=lambda p: p.last_review_activity)
-    return flask.render_template("user/packages.html", packages=packages)
+    result = views.user_packages(flask.g.db, flask.g.fas_user.username)
+    return flask.render_template("user/packages.html", **result.context)
 
 @APP.route("/my/reviews")
 @fas_login_required

@@ -2,20 +2,45 @@
 
 {% block content %}
 
-{% if packages|length == 0 %}
-<p>You don't own any packages here.</p>
-{% else %}
+<h1>Packages for {{ g.fas_user.username }}</h1>
 
+
+
+<h2>Proposed packages</h2>
+
+{% if packages|length == 0 %}
+<p>No packages here.</p>
+{% else %}
 <ul>
 {% for package in packages %}
-    {% with rev=package.last_review %}
+    {% with rev = package.last_review %}
     <li>
         <a href="{{ url_for("package", name=package.name) }}">{{ package.name }}</a>
+        {% if rev %}
         (last review: <a href="{{ url_for("review", pname=package.name, rid=rev.id) }}">{{ rev.id }}</a>)
+        {% else %}
+        (no review yet)
+        {% endif %}
     </li>
     {% endwith %}
 {% endfor %}
-
+</ul>
 {% endif %}
+
+
+<h2>Old packages</h2>
+
+{% if old_packages|length == 0 %}
+<p>No packages here.</p>
+{% else %}
+<ul>
+{% for package in old_packages %}
+    <li>
+        <a href="{{ url_for("package", name=package.name) }}">{{ package.name }}</a>
+    </li>
+{% endfor %}
+{% endif %}
+
+
 
 {% endblock %}

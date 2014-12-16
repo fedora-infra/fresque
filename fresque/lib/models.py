@@ -27,6 +27,7 @@ class Package(Base):
     # strict model checks that come with the added complexity in migrations.
     state       = sa.Column(sa.String(64),
                             nullable=False, default="new", index=True)
+    # TODO: when we setup a workflow engine, extract the entry state here
     submitted   = sa.Column(sa.DateTime,
                             index=True, nullable=False, default=sa.func.now())
     requires    = sa.Column(sa.Integer,
@@ -41,13 +42,17 @@ class Package(Base):
 
     @property
     def last_review(self):
-        return self.reviews.desc().first()
+        return self.reviews.order_by(Review.id.desc()).first()
 
     @property
     def last_review_activity(self):
         # TODO: cache this
-        req = sa.orm.object_session(self).query("Comment.date").join(
-            "Review").with_parent(self).order_by("Comment.date").desc().first()
+        req = sa.orm.object_session(self
+            ).query(Comment.date).join(Review
+            ).filter(Review.package_id == self.id
+            ).order_by(Comment.date.desc()).first()
+        if req is None:
+            return None
         return req.date
 
 
