@@ -51,17 +51,12 @@ def newpackage(db, method, data, username):
 
 def user_packages(db, username):
     all_packages = db.query(Package).filter_by(owner=username).all()
-    # TODO: filter-out included packages (state == done)
     all_packages.sort(key=lambda p: p.last_review_activity)
     packages = []
     old_packages = []
     for package in all_packages:
-        if package.state in ["done", "rejected"]:
-            # I'm pretty sure we'll end up needing a workflow engine, if we
-            # want to make the app easily configurable. Then we can extract the
-            # exit states here instead of hardcoding.
-            # TODO: use a workflow engine.
-            old_packages.append(package)
-        else:
+        if package.active:
             packages.append(package)
+        else:
+            old_packages.append(package)
     return Result({"packages": packages, "old_packages": old_packages})

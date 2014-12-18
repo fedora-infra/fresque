@@ -5,11 +5,13 @@ from __future__ import absolute_import, unicode_literals, print_function
 
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 
 
 Base = declarative_base()
 
 # TODO: add relationships
+
 
 class Package(Base):
     """
@@ -54,6 +56,18 @@ class Package(Base):
         if req is None:
             return None
         return req.date
+
+    @hybrid_property
+    def active(self):
+        # I'm pretty sure we'll end up needing a workflow engine, if we
+        # want to make the app easily configurable. Then we can extract the
+        # exit states here instead of hardcoding.
+        # TODO: use a workflow engine.
+        return self.state not in ["done", "rejected"]
+    @active.expression
+    def active(cls):
+        return sa.not_(cls.state.in_(["done", "rejected"]))
+
 
 
 class Distribution(Base):
