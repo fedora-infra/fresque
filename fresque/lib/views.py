@@ -14,10 +14,11 @@ Exceptions:
 
 from __future__ import absolute_import, unicode_literals, print_function
 
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
 
 from fresque import forms
-from fresque.lib.models import Package, Distribution
+from fresque.lib.models import Package, Distribution, Review, Reviewer
 from fresque.lib.utils import Result
 
 
@@ -66,3 +67,11 @@ def user_packages(db, username):
         else:
             old_packages.append(package)
     return Result({"packages": packages, "old_packages": old_packages})
+
+
+def user_reviews(db, username):
+    reviews = db.query(Review).join(Reviewer).filter(and_(
+            Reviewer.reviewer_name == username,
+            Review.active == True
+        )).order_by(Review.date_start).all()
+    return Result({"reviews": reviews})

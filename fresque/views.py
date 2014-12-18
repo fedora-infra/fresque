@@ -64,7 +64,8 @@ def user_packages():
 @APP.route("/my/reviews")
 @fas_login_required
 def user_reviews():
-    return flask.render_template("simple.html", content="user_reviews")
+    result = views.user_reviews(flask.g.db, flask.g.fas_user.username)
+    return flask.render_template("user/reviews.html", **result.context)
 
 
 # Login / logout
