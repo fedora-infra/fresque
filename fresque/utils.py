@@ -70,4 +70,7 @@ def handle_result(result, template):
     if result.redirect:
         return flask.redirect(flask.url_for(
             result.redirect[0], **result.redirect[1]))
-    return flask.render_template(template, **result.context)
+    if result.code != 200:
+        result.context["code"] = code
+        template = "error.html"
+    return flask.render_template(template, **result.context), result.code

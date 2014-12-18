@@ -34,10 +34,12 @@ def framework_name():
 
 
 class Result:
-    def __init__(self, context=None):
+    def __init__(self, context=None, code=200):
         self.context = context or {}
         self.flash = []
+        # `redirect` must be None or a tuple: (view_name, view_kwargs)
         self.redirect = None
+        self.code = code
 
 
 def redirect_to_url(url):
