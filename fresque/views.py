@@ -11,7 +11,7 @@ from flask.ext.fas import fas_login_required
 from six import string_types
 
 from fresque import APP, FAS
-from fresque.utils import is_safe_url, is_authenticated
+from fresque.utils import is_safe_url, is_authenticated, handle_result
 from fresque.lib import views
 
 
@@ -47,12 +47,7 @@ def newpackage():
     result = views.newpackage(
         flask.g.db, flask.request.method, flask.request.form,
         flask.g.fas_user.username)
-    for msg, style in result.flash:
-        flask.flash(msg, style)
-    if result.redirect:
-        return flask.redirect(flask.url_for(
-            result.redirect[0], **result.redirect[1]))
-    return flask.render_template('new.html', **result.context)
+    return handle_result(result, 'new.html')
 
 
 @APP.route("/my/packages")

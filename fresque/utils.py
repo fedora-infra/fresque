@@ -62,3 +62,12 @@ def admin_required(function):
             return flask.redirect(flask.url_for('index'))
         return function(*args, **kwargs)
     return decorated_function
+
+
+def handle_result(result, template):
+    for msg, style in result.flash:
+        flask.flash(msg, style)
+    if result.redirect:
+        return flask.redirect(flask.url_for(
+            result.redirect[0], **result.redirect[1]))
+    return flask.render_template(template, **result.context)
