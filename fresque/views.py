@@ -17,7 +17,8 @@ from fresque.lib import views
 
 @APP.route("/")
 def index():
-    return flask.render_template("index.html")
+    result = views.index(flask.g.db)
+    return handle_result(result, 'index.html')
 
 @APP.route("/search")
 def search():

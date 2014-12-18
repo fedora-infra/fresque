@@ -27,11 +27,12 @@ class Package(Base):
     owner       = sa.Column(sa.String(255))
     # The state could use an Enum type, but we don't need the space-savings and
     # strict model checks that come with the added complexity in migrations.
+    # TODO: when we setup a workflow engine, extract the entry state here
     state       = sa.Column(sa.String(64),
                             nullable=False, default="new", index=True)
-    # TODO: when we setup a workflow engine, extract the entry state here
     submitted   = sa.Column(sa.DateTime,
                             index=True, nullable=False, default=sa.func.now())
+    # TODO: extract requires from the spec file on push
     requires    = sa.Column(sa.Integer,
                             sa.ForeignKey("packages.id", onupdate="cascade"))
     distributions = sa.orm.relationship("Distribution", backref="packages",
@@ -44,7 +45,8 @@ class Package(Base):
 
     @property
     def last_review(self):
-        return self.reviews.order_by(Review.id.desc()).first()
+        return sa.orm.object_session(self).query(Review).with_parent(self
+            ).order_by(Review.id.desc()).first()
 
     @property
     def last_review_activity(self):
@@ -102,7 +104,7 @@ class Review(Base):
     date_end   = sa.Column(sa.DateTime, index=True)
     srpm_filename = sa.Column(sa.String(255))
     spec_filename = sa.Column(sa.String(255))
-    active     = sa.Column(sa.Boolean, nullable=False, default=True)
+    active     = sa.Column(sa.Boolean, index=True, nullable=False, default=True)
 
     def __repr__(self):
         return '<Review %r of package %r>' % (self.id, self.package_id)
@@ -131,11 +133,11 @@ class Comment(Base):
     review_id   = sa.Column(sa.Integer,
                             sa.ForeignKey("reviews.id",
                                 ondelete="cascade", onupdate="cascade"))
-    author      = sa.Column(sa.String(255))
-    date        = sa.Column(sa.DateTime, nullable=False, default=sa.func.now())
+    author      = sa.Column(sa.String(255), index=True)
+    date        = sa.Column(sa.DateTime, index=True, nullable=False, default=sa.func.now())
     line_number = sa.Column(sa.Integer)
     # relevant: has the comment been replied to?
-    relevant    = sa.Column(sa.Boolean, nullable=False, default=True)
+    relevant    = sa.Column(sa.Boolean, index=True, nullable=False, default=True)
 
     def __repr__(self):
         return '<Comment %r on %r>' % (self.id, self.review_id)

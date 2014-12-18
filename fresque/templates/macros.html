@@ -1,0 +1,15 @@
+
+{% macro package_list(packages, title=None) %}
+    {% if title %}
+    <h3>{{ title }}</h3>
+    {% endif %}
+    {% if packages %}
+    <ul>
+        {% for pkg in packages %}
+        <li><a href="#">{{ pkg.name }}</a> - {{ pkg.summary }}</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted">(nothing here)</p>
+    {% endif %}
+{% endmacro %}
