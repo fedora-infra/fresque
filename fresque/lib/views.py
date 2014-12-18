@@ -14,7 +14,6 @@ Exceptions:
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-from sqlalchemy import and_, not_
 from sqlalchemy.exc import SQLAlchemyError
 
 from fresque import forms
@@ -25,11 +24,11 @@ from fresque.lib.utils import Result
 def index(db):
     recent_pkgs = db.query(Package).filter(Package.active
         ).order_by(Package.submitted.desc()).limit(10).all()
-    updated_revs = db.query(Review).join(Comment).filter(Review.active
+    updated_revs = db.query(Review).join(Comment
         ).order_by(Comment.date.desc()).limit(10).all()
-    pkgs_without_rev = db.query(Package).filter(and_(
-        Package.active, not_(Package.reviews.any(Review.active == True))
-        )).order_by(Package.submitted.desc()).limit(10).all()
+    pkgs_without_rev = db.query(Package).filter(
+        Package.active, ~Package.reviews.any()
+        ).order_by(Package.submitted.desc()).limit(10).all()
     return Result({"recent_pkgs": recent_pkgs,
                    "updated_revs": updated_revs,
                    "pkgs_without_rev": pkgs_without_rev,
@@ -83,8 +82,7 @@ def user_packages(db, username):
 
 
 def user_reviews(db, username):
-    reviews = db.query(Review).join(Reviewer).filter(and_(
-            Reviewer.reviewer_name == username,
-            Review.active == True
-        )).order_by(Review.date_start).all()
+    reviews = db.query(Review).join(Reviewer).filter(
+            Reviewer.reviewer_name == username
+        ).order_by(Review.date_start).all()
     return Result({"reviews": reviews})

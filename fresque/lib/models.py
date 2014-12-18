@@ -104,7 +104,6 @@ class Review(Base):
     date_end   = sa.Column(sa.DateTime, index=True)
     srpm_filename = sa.Column(sa.String(255))
     spec_filename = sa.Column(sa.String(255))
-    active     = sa.Column(sa.Boolean, index=True, nullable=False, default=True)
 
     def __repr__(self):
         return '<Review %r of package %r>' % (self.id, self.package_id)
