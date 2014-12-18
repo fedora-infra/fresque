@@ -21,6 +21,12 @@ from fresque.lib.models import Package, Distribution
 from fresque.lib.utils import Result
 
 
+def packages(db):
+    packages = db.query(Package).filter(Package.active).all()
+    packages.sort(key=lambda p: p.last_review_activity)
+    return Result({"packages": packages})
+
+
 def newpackage(db, method, data, username):
     distributions = db.query(
         Distribution).order_by(Distribution.id).all()

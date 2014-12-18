@@ -1,0 +1,28 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<h1>Proposed packages</h1>
+
+
+{% if packages|length == 0 %}
+<p>No packages here.</p>
+{% else %}
+<ul>
+{% for package in packages %}
+    {% with rev = package.last_review %}
+    <li>
+        <a href="{{ url_for("package", name=package.name) }}">{{ package.name }}</a>
+        {% if rev %}
+        (last review: <a href="{{ url_for("review", pname=package.name, rid=rev.id) }}">{{ rev.id }}</a>)
+        {% else %}
+        (no review yet)
+        {% endif %}
+    </li>
+    {% endwith %}
+{% endfor %}
+</ul>
+{% endif %}
+
+
+{% endblock %}

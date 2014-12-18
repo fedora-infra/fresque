@@ -25,7 +25,8 @@ def search():
 
 @APP.route("/packages")
 def packages():
-    return flask.render_template("simple.html", content="all packages")
+    result = views.packages(flask.g.db)
+    return flask.render_template('packages.html', **result.context)
 
 @APP.route("/packages/<name>")
 def package(name):
