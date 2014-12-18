@@ -20,6 +20,24 @@
 }
 
 
+/*
+ * New package form
+ */
+
 form div.submit {
     margin-top: 1.5em;
+}
+
+
+/*
+ * Package page
+ */
+#watch-toggle {
+    margin-left: 2em;
+}
+.package-status .btn {
+    margin-left: 1em;
+}
+.package-attributes {
+    margin-top: 2em;
 }

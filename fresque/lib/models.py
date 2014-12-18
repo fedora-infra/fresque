@@ -6,6 +6,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import sqlalchemy as sa
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy.ext.associationproxy import association_proxy
 
 
 Base = declarative_base()
@@ -104,6 +105,8 @@ class Review(Base):
     date_end   = sa.Column(sa.DateTime, index=True)
     srpm_filename = sa.Column(sa.String(255))
     spec_filename = sa.Column(sa.String(255))
+    reviewers_obj = sa.orm.relationship("Reviewer")
+    reviewers  = association_proxy('reviewers_obj', 'reviewer_name')
 
     def __repr__(self):
         return '<Review %r of package %r>' % (self.id, self.package_id)

@@ -27,19 +27,24 @@ def search():
 @APP.route("/packages")
 def packages():
     result = views.packages(flask.g.db)
-    return flask.render_template('packages.html', **result.context)
+    return handle_result(result, 'packages.html')
 
 @APP.route("/packages/<name>")
 def package(name):
-    return flask.render_template("simple.html", content="package %s" % name)
+    result = views.package(flask.g.db, name)
+    return handle_result(result, 'package.html')
 
-@APP.route("/pacakges/<pname>/reviews/")
+@APP.route("/packages/<pname>/reviews/")
 def reviews(pname):
-    return flask.render_template("simple.html", content="review for package %s" % pname)
+    return flask.render_template("simple.html", content="reviews for package %s" % pname)
 
-@APP.route("/pacakges/<pname>/reviews/<int:rid>")
+@APP.route("/packages/<pname>/reviews/<int:rid>")
 def review(pname, rid):
     return flask.render_template("simple.html", content="review %d" % rid)
+
+@APP.route("/packages/<pname>/reviews/new")
+def newreview(pname):
+    return flask.render_template("simple.html", content="new review for package %s" % pname)
 
 
 @APP.route("/new", methods=["GET", "POST"])

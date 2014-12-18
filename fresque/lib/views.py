@@ -15,6 +15,7 @@ Exceptions:
 from __future__ import absolute_import, unicode_literals, print_function
 
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm.exc import NoResultFound
 
 from fresque import forms
 from fresque.lib.models import Package, Distribution, Review, Reviewer, Comment
@@ -34,10 +35,21 @@ def index(db):
                    "pkgs_without_rev": pkgs_without_rev,
                    })
 
+
 def packages(db):
     packages = db.query(Package).filter(Package.active).all()
     packages.sort(key=lambda p: p.last_review_activity)
     return Result({"packages": packages})
+
+
+def package(db, name):
+    try:
+        package = db.query(Package).filter_by(name=name).one()
+    except NoResultFound:
+        return Result({"message": "Unknown package: {}".format(name)},
+                      code=404)
+    else:
+        return Result({"package": package})
 
 
 def newpackage(db, method, data, username):

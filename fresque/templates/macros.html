@@ -6,7 +6,7 @@
     {% if packages %}
     <ul>
         {% for pkg in packages %}
-        <li><a href="#">{{ pkg.name }}</a> - {{ pkg.summary }}</li>
+        <li><a href="{{ url_for("package", name=pkg.name) }}">{{ pkg.name }}</a> - {{ pkg.summary }}</li>
         {% endfor %}
     </ul>
     {% else %}

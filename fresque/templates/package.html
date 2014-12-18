@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+{% set last_review = package.last_review %}
+
+<h1>
+Package "{{ package.name }}"
+<button class="btn btn-default btn-sm" id="watch-toggle">
+    {% if iswatched %}
+    <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+    Unwatch
+    {% else %}
+    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span>
+    Watch
+    {% endif %}
+</button>
+</h1>
+
+<div class="package-attributes">
+    <p><strong>Summary:</strong> {{ package.summary }}</p>
+    <p><strong>Description:</strong> {{ package.description }}</p>
+</div>
+
+<hr />
+
+<p class="text-info package-status">
+
+{# XXX: update here if you change the states list #}
+
+{% if package.state == "new" %}
+    This package has no review yet.
+    <a class="btn btn-primary btn-sm" href="{{ url_for('newreview', pname=package.name) }}">
+        <span class="glyphicon glyphicon-arrow-right"></span>
+        Start a review
+    </a>
+
+{% elif package.state == "review" %}
+    This package is under review.
+
+{% elif package.state == "done" %}
+    This package has been accepted.
+    <a href="{{ url_for('review', pname=package.name, rid=last_review.id) }}">
+        Check out the last review
+    </a>.
+
+{% elif package.state == "rejected" %}
+    This package has been rejected.
+    <a href="{{ url_for('review', pname=package.name, rid=last_review.id) }}">
+        Would you like to know more?
+    </a>.{#  ^-- gratuitious reference to Starship Troopers #}
+
+{% endif %}
+</p>
+
+
+{% if package.state == "review" %}
+<h2>Current review</h2>
+<p>On {{ lastreview.date_start }} by {{ lastreview.reviewers|join(", ") }}.</p>
+{% endif %}
+
+
+{% endblock %}
