@@ -40,11 +40,17 @@ APP.wsgi_app = fresque.proxy.ReverseProxied(APP.wsgi_app)
 
 # Database
 
-from fresque.lib.database import create_session
+from fresque.lib.database import create_session, DatabaseNeedsUpgrade
 
 @APP.before_request
 def before_request():
-    flask.g.db = create_session(APP.config["SQLALCHEMY_DATABASE_URI"])
+    try:
+        flask.g.db = create_session(APP.config["SQLALCHEMY_DATABASE_URI"])
+    except DatabaseNeedsUpgrade:
+        return flask.render_template("error.html", code=500,
+            message="The database schema must be upgraded "
+                    "by the administrator",
+            ), 500
 
 @APP.teardown_appcontext
 def shutdown_session(exception=None): # pylint: disable=unused-argument

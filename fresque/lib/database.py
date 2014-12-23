@@ -9,7 +9,23 @@ from __future__ import absolute_import, unicode_literals, print_function
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, scoped_session
 
+import alembic.command
+import alembic.config
+from alembic.script import ScriptDirectory
+from alembic.migration import MigrationContext
+
 from fresque.lib import models
+
+
+class DatabaseNeedsUpgrade(Exception):
+    """The database's schema is not up-to-date"""
+
+
+def get_alembic_config(db_url):
+    alembic_cfg = alembic.config.Config()
+    alembic_cfg.set_main_option("script_location", "fresque.lib:alembic")
+    alembic_cfg.set_main_option("sqlalchemy.url", db_url)
+    return alembic_cfg
 
 
 def create_session(db_url, debug=False, pool_recycle=3600):
@@ -30,6 +46,14 @@ def create_session(db_url, debug=False, pool_recycle=3600):
         convert_unicode=True)
     session = scoped_session(sessionmaker(
         autocommit=False, autoflush=False, bind=engine))
+    # check that the database's schema is up-to-date
+    script_dir = ScriptDirectory.from_config(get_alembic_config(db_url))
+    head_rev = script_dir.get_current_head()
+    context = MigrationContext.configure(session.connection())
+    current_rev = context.get_current_revision()
+    if current_rev != head_rev:
+        raise DatabaseNeedsUpgrade
+    # everything looks good here
     return session
 
 
@@ -60,17 +84,8 @@ def create_tables(config, debug=False):
             dbapi_con.execute('pragma foreign_keys=ON')
         sa.event.listen(engine, 'connect', _fk_pragma_on_connect)
 
-    alembic_ini = config.get('PATH_ALEMBIC_INI')
-    if alembic_ini:  # pragma: no cover
-        # then, load the Alembic configuration and generate the
-        # version table, "stamping" it with the most recent rev:
-
-        # Ignore the warning missing alembic
-        # pylint: disable=F0401
-        from alembic.config import Config
-        from alembic import command
-        alembic_cfg = Config(alembic_ini)
-        command.stamp(alembic_cfg, "head")
+    # Generate the Alembic version table and "stamp" it with the latest rev
+    alembic.command.stamp(get_alembic_config(db_url), "head")
 
     # Add missing distributions
     session = create_session(db_url, debug=debug)
