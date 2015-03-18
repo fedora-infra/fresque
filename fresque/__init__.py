@@ -20,7 +20,6 @@ APP.config.from_object('fresque.default_config')
 if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
     APP.config.from_envvar('FRESQUE_CONFIG')
 
-
 # Set up FAS extension
 FAS = flask_fas_openid.FAS(APP)
 

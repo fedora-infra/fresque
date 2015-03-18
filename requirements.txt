@@ -1,7 +1,10 @@
+alembic
 Flask
+MarkupSafe
 python-fedora
 python-openid
 python-openid-cla
 python-openid-teams
-Flask-WTF
 six
+SQLAlchemy
+
