@@ -14,6 +14,11 @@ Exceptions:
 
 from __future__ import absolute_import, unicode_literals, print_function
 
+import os
+import pygit2
+import json
+from time import time
+
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -52,12 +57,12 @@ def package(db, name):
         return Result({"package": package})
 
 
-def newpackage(db, method, data, username):
+def newpackage(db, method, data, username, gitfolder):
     distributions = db.query(
         Distribution).order_by(Distribution.id).all()
     form = forms.NewPackage(data)
-    form.distributions.choices = [ (d.id, d.name) for d in distributions ]
-    form.distributions.default = [ d.id for d in distributions ]
+    form.distributions.choices = [(d.id, d.name) for d in distributions]
+    form.distributions.default = [d.id for d in distributions]
     result = Result({"form": form})
     if method == "POST" and form.validate():
         pkg = Package(
@@ -73,10 +78,17 @@ def newpackage(db, method, data, username):
             db.commit()
         except SQLAlchemyError:
             result.flash.append(("An error occurred while adding your "
-                 "package, please contact an administrator.", "danger"))
+                "package, please contact an administrator.", "danger"))
         else:
             result.flash.append(("Package successfully created!", "success"))
             result.redirect = ('package', {"name": pkg.name})
+
+            # Add git repo creation message
+            if create_git_repo(pkg.name, gitfolder):
+                result.flash.append((
+                    "successfully created the git repository", "OK")
+                )
+
     return result
 
 
@@ -98,3 +110,15 @@ def user_reviews(db, username):
             Reviewer.reviewer_name == username
         ).order_by(Review.date_start).all()
     return Result({"reviews": reviews})
+
+
+def create_git_repo(name, gitfolder):
+    # Create a git project based on the package information.
+
+    gitrepo = os.path.join(gitfolder, '%s.git' % name)
+    if os.path.exists(gitrepo):
+        raise IOError('The project repo "%s" already exists' % name)
+
+    # create a bare git repository
+    pygit2.init_repository(gitrepo, bare=True)
+    return 'Project "%s" git respository created' % name

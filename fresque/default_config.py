@@ -21,7 +21,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(
 # secret key used to generate unique csrf token
 SECRET_KEY = 'Change-me-Im-famous'
 
-## If the authentication method is `fas`:
+# If the authentication method is `fas`:
 # To log in, the user must be a member of one of these groups
 REQUIRED_GROUPS = ('packager', 'provenpackager')
 # To get admin rights, the user must be a member of one of these groups
@@ -46,3 +46,8 @@ STATES = {
     "rejected": "rejected",
     "done": "included",
 }
+
+# git respository file system path
+GIT_DIRECTORY_PATH = '/var/git'
+
+

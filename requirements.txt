@@ -1,6 +1,7 @@
 alembic
 Flask
 MarkupSafe
+pygit2
 python-fedora
 python-openid
 python-openid-cla
