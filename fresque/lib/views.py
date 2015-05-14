@@ -21,7 +21,7 @@ from time import time
 
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm.exc import NoResultFound
-
+from pygit2 import GitError
 from fresque import forms
 from fresque.lib.models import Package, Distribution, Review, Reviewer, Comment
 from fresque.lib.utils import Result
@@ -84,10 +84,13 @@ def newpackage(db, method, data, username, gitfolder):
             result.redirect = ('package', {"name": pkg.name})
 
             # Add git repo creation message
-            if create_git_repo(pkg.name, gitfolder):
+            try:
+                status_message = create_git_repo(pkg.name, gitfolder)
                 result.flash.append((
-                    "successfully created the git repository", "OK")
-                )
+                    status_message, "OK"))
+            except GitError:
+                result.flash.append("An error occurred while creating git \
+                    repository, please contact an administrator.", "danger")
 
     return result
 
@@ -114,11 +117,12 @@ def user_reviews(db, username):
 
 def create_git_repo(name, gitfolder):
     # Create a git project based on the package information.
-
+    # get the path of the git repo
     gitrepo = os.path.join(gitfolder, '%s.git' % name)
-    if os.path.exists(gitrepo):
-        raise IOError('The project repo "%s" already exists' % name)
 
-    # create a bare git repository
-    pygit2.init_repository(gitrepo, bare=True)
-    return 'Project "%s" git respository created' % name
+    if os.path.exists(gitrepo):
+        raise IOError('The project git repo "%s" already exists' % name)
+    else:
+        # create a bare git repository
+        pygit2.init_repository(gitrepo, bare=True)
+    return 'Successfully created Project {0} git respository'.format(name)
