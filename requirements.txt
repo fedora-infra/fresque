@@ -1,5 +1,6 @@
 alembic
 Flask
+Flask-WTF
 MarkupSafe
 python-fedora
 python-openid
