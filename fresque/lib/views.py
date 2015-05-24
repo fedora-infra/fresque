@@ -87,10 +87,10 @@ def newpackage(db, method, data, username, gitfolder):
             try:
                 status_message = create_git_repo(pkg.name, gitfolder)
                 result.flash.append((
-                    status_message, "OK"))
-            except GitError:
-                result.flash.append("An error occurred while creating git \
-                    repository, please contact an administrator.", "danger")
+                    status_message, "success"))
+            except (GitError, IOError):
+                result.flash.append(("An error occurred while creating git \
+                    repository, please contact an administrator.", "danger"))
 
     return result
 
@@ -122,7 +122,6 @@ def create_git_repo(name, gitfolder):
 
     if os.path.exists(gitrepo):
         raise IOError('The project git repo "%s" already exists' % name)
-    else:
-        # create a bare git repository
-        pygit2.init_repository(gitrepo, bare=True)
+    # create a bare git repository
+    pygit2.init_repository(gitrepo, bare=True)
     return 'Successfully created Project {0} git respository'.format(name)
