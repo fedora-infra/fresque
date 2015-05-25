@@ -7,6 +7,7 @@ Those functions are proxies for the framework's functions.
 """
 
 from __future__ import absolute_import, unicode_literals, print_function
+import chardet
 
 
 def _is_flask():
@@ -49,3 +50,17 @@ def redirect_to_url(url):
     if framework_name() == "pyramid":
         from pyramid.httpexceptions import HTTPFound
         return HTTPFound(location=url)
+
+
+def decode(data, encoding=None):
+    if isinstance(data, unicode):
+        return data
+    if encoding:
+        return data.decode(encoding)
+    try:
+        return data.decode('utf-8')
+    except UnicodeDecodeError:
+        encoding = chardet.detect(data)['encoding']
+        if not encoding:
+            return "(Binary data)"
+        return data.decode(encoding)
