@@ -170,12 +170,3 @@ class Repository(pygit2.Repository):
                 ret.append(os.path.join(path, entry.name))
         return ret
 
-
-def get_tree(tree, path):
-    for dir in path:
-        if dir not in tree:
-            return None
-        tree = repo[tree[dir].hex]
-    return tree
-
-repo = Repository('/var/git/rahulrrixe/spiderman')
