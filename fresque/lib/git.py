@@ -157,21 +157,8 @@ class Repository(pygit2.Repository):
             has it changed since last commit?
             let's compare it's sha with the previous found sha
         '''
-        last_commit = None
-        last_oid = None
         for commit in self.walk(self.head.target, pygit2.GIT_SORT_TIME):
-            # checks if the file exists
-            if entry in commit.tree:
-                oid = commit.tree[entry].oid
-                has_changed = (oid != last_oid and last_oid)
-                if has_changed:
-                    yield last_commit
-                last_oid = oid
-            else:
-                last_oid = None
-            last_commit = commit
-        if last_oid:
-            yield last_commit
+            return commit
 
     def ls_tree(self, tree, path=''):
         ret = []
