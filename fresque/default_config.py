@@ -49,5 +49,3 @@ STATES = {
 
 # git respository file system path
 GIT_DIRECTORY_PATH = '/var/git'
-
-
