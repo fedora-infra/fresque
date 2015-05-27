@@ -96,7 +96,7 @@ class Repository(pygit2.Repository):
         except pygit2.GitError:
             return None
 
-    def get_commits(self, skip, count, search=None, file=None):
+    def get_commits(self, skip=0, count=1, search=None, file=None):
         ''' get all the commit of the repo '''
         num = 0
         path = list()
@@ -141,16 +141,8 @@ class Repository(pygit2.Repository):
                 continue
             if num >= skip + count:
                 break
-            commits.append({
-                'hash': commit.hex,
-                'message': commit.message,
-                'commit_date': datetime.utcfromtimestamp(
-                    commit.commit_time).strftime('%Y-%m-%dT%H:%M:%SZ'),
-                'author_name': commit.author.name,
-                'author_email': commit.author.email,
-                'parents': [c.hex for c in commit.parents], })
-
-        return json.dumps(commits, indent=4)
+            commits.append(commit)
+        return commits
 
     def get_last_commit(self):
         ''' loops through all the commits
@@ -159,6 +151,35 @@ class Repository(pygit2.Repository):
         '''
         for commit in self.walk(self.head.target, pygit2.GIT_SORT_TIME):
             return commit
+
+    def get_commit_diff(self, commitid1=None, commitid2=None):
+        """ Returns the diff of commit(s).
+        """
+        if commitid1 is None and commitid2 is None:
+            diff = self.diff()
+        elif None in [commitid1, commitid2]:
+            commitid = [
+                el
+                for el in [commitid1, commitid2]
+                if el is not None
+            ][0]
+            commit = self.get(commitid)
+            if commit is None:
+                raise pygit2.GitError
+            if len(commit.parents) > 1:
+                diff = ''
+            elif len(commit.parents) == 1:
+                parent = self.revparse_single('%s^' % commitid)
+                diff = self.diff(parent, commit)
+            else:
+                # First commit in the repo
+                diff = commit.tree.diff_to_tree(swap=True)
+        else:
+            c_t0 = self.revparse_single(commitid1)
+            c_t1 = self.revparse_single(commitid2)
+            diff = self.diff(c_t0, c_t1)
+
+        return diff
 
     def ls_tree(self, tree, path=''):
         ret = []
@@ -169,4 +190,47 @@ class Repository(pygit2.Repository):
             else:
                 ret.append(os.path.join(path, entry.name))
         return ret
+
+    def commit_to_patch(self, commits):
+        if not isinstance(commits, list):
+            commits = [commits]
+
+        patch = ""
+        for cnt, commit in enumerate(commits):
+            if commit.parents:
+                diff = commit.tree.diff_to_tree()
+
+                parent = self.revparse_single('%s^' % commit.oid.hex)
+                diff = self.diff(parent, commit)
+            else:
+                # First commit in the repo
+                diff = commit.tree.diff_to_tree(swap=True)
+
+            subject = message = ''
+            if '\n' in commit.message:
+                subject, message = commit.message.split('\n', 1)
+            else:
+                subject = commit.message
+
+            if len(commits) > 1:
+                subject = '[PATCH %s/%s] %s' % (cnt + 1, len(commits), subject)
+
+            patch += u"""From {commit} Mon Sep 17 00:00:00 2001
+                From: {author_name} <{author_email}>
+                Date: {date}
+                Subject: {subject}
+
+                {msg}
+                ---
+
+                {patch}
+    """.format(commit=commit.oid.hex,
+               author_name=commit.author.name,
+               author_email=commit.author.email,
+               date=datetime.utcfromtimestamp(
+                   commit.commit_time).strftime('%b %d %Y %H:%M:%S +0000'),
+               subject=subject,
+               msg=message,
+               patch=diff.patch)
+        return patch
 
