@@ -9,4 +9,6 @@ python-openid-teams
 six
 SQLAlchemy
 chardet
+arrow
+
 
