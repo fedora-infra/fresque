@@ -10,7 +10,6 @@ import logging
 import logging.handlers
 import os
 import sys
-from fresque import filters
 import flask
 import flask_fas_openid
 from inspect import getmembers, isfunction
@@ -19,21 +18,21 @@ APP = flask.Flask(__name__)
 APP.jinja_env.trim_blocks = True
 APP.jinja_env.lstrip_blocks = True
 
-# add jinja filters
-filter_name = {
-    'shorted_commit': 'short',
-    'human_readable_time': 'humanize'
-}
-# update jinja filter with flask app env
-jinja_filters = {filter_name[name]: function
-                    for name, function in getmembers(filters)
-                    if isfunction(function)}
+# # add jinja filters
+# filter_name = {
+#     'shorted_commit': 'short',
+#     'human_readable_time': 'humanize'
+# }
+# # update jinja filter with flask app env
+# jinja_filters = {filter_name[name]: function
+#                     for name, function in getmembers(filters)
+#                     if isfunction(function)}
 
-APP.jinja_env.filters.update(jinja_filters)
+# APP.jinja_env.filters.update(jinja_filters)
 
-APP.config.from_object('fresque.default_config')
-if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
-    APP.config.from_envvar('FRESQUE_CONFIG')
+# APP.config.from_object('fresque.default_config')
+# if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
+#     APP.config.from_envvar('FRESQUE_CONFIG')
 
 # Set up FAS extension
 FAS = flask_fas_openid.FAS(APP)
@@ -72,4 +71,4 @@ def shutdown_session(exception=None): # pylint: disable=unused-argument
         flask.g.db.remove()
 
 
-from fresque import views, gitview
+from fresque import views, gitview, filters
