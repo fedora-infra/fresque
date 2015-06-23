@@ -1,22 +1,55 @@
 {% extends 'layout.html' %}
-
 {% import 'macros.html' as macros %}
+
+{% block git %}
+    {% include "/git/git_layout.html" %}
+{% endblock %}
 
 {% block content %}
 
+<!-- Show the path -->
+<ul class="breadcrumb">
+    <li class="active">{{repo}}</li>
+    <li><a href="#"></a></li>
+</ul>
+
+<!-- git file tree -->
 {% if tree %}
-    <section class="tree_list">
-      <h3>Current tree</h3>
-      <ul>
+<table class="table table-hover gitweb-tree-table">
+    <thead>
+        <tr>
+            <th width="150">Filename</th>
+            <th width="150">Last Change</th>
+            <th>Last commit</th>
+        </tr>
+    </thead>
+    <tbody>
         {% for entry in tree %}
-        <li class="{% if entry.filemode == 16384 %}folder{% else %}file{% endif %}">
-            <a href="#">
-                {{ entry.name }}
-                <span class="filehex" >{{ entry.hex|short }}</span>
+        <tr>
+            <td>
+                <i class="glyphicon glyphicon-{% if entry.filemode == 16384 %}folder-close{% else %}list-alt{% endif %}"></i>
+                <a href="#">
+              {{ entry.name }}
             </a>
-        </li>
+            </td>
+            <td> An hour Ago </td>
+            <td><a href="#"> {{ entry.hex|short }} </a></td>
+        </tr>
         {% endfor %}
-      </ul>
-    </section>
-  {% endif %}
+    </tbody>
+</table>
+{% endif %}
+
+{% if readme %}
+<!-- display readme -->
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title"> <span class="glyphicon glyphicon-book"></span> README  </h3>
+  </div>
+  <div class="panel-body">
+    {{readme|safe}}
+  </div>
+</div>
+{% endif %}
 {% endblock %}
+
