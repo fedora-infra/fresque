@@ -15,8 +15,6 @@ import flask_fas_openid
 from inspect import getmembers, isfunction
 
 APP = flask.Flask(__name__)
-APP.jinja_env.trim_blocks = True
-APP.jinja_env.lstrip_blocks = True
 
 APP.config.from_object('fresque.default_config')
 if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
