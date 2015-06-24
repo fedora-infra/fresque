@@ -1,0 +1,68 @@
+{% extends 'layout.html' %} {% import 'macros.html' as macros %} {% block git %} {% include "/git/git_layout.html" %} {% endblock %} {% block content%}
+
+<ul class="breadcrumb">
+    <li><a href="#"><strong>{{repo}}</strong></a></li>
+    <li class="active">
+    {% for file in filename.split('/') %}
+        {% if loop.first %}
+            {% set path = file %}
+        {% else %}
+            {% set path = path + '/' + file %}
+        {% endif %}
+    {% if loop.index != loop.length %}
+        <a href="{{ url_for('view_file', repo=repo, identifier=branchname,
+            filename=path)}}">
+            {{ file }}
+        </a>/
+    {% else %}
+       {{ file }}
+    {% endif %}
+
+    {% endfor %}
+    </li>
+</ul>
+
+{% if content %}
+{% if output_type == 'file' or output_type == 'binary' %}
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="pull-right">
+        <a class="btn btn-primary" href="{{ url_for('view_file',
+                    repo=repo, identifier=branchname,
+                    filename=filename) }}" title="View as blob">Blob</a>
+        <a  class="btn btn-primary" href="#" title="View as raw">Raw</a>
+      </div>
+    </div>
+    <div class="panel-body">
+{% if output_type=='file' %} {% autoescape false %}
+            {{ content | safe}}
+            {% endautoescape %}
+{% elif output_type == 'image' %}
+     <img src="#" />
+{% elif output_type == 'binary' %}
+    <p class="noresult">
+      Binary files cannot be rendered.
+    <br/> Please
+        <a href="#">view the raw version
+        </a>
+    </p>
+    </div>
+</div>
+{% else %}
+
+<h3>Tree</h3>
+  <ul>
+    {% for entry in content %}
+    <li class="{% if entry.filemode == 16384 %}folder{% else %}file{% endif %}">
+      <a href="{{ url_for('view_file',
+                repo=repo, identifier=branchname,
+                filename=filename + '/' + entry.name if filename else entry.name) }}">
+        {{ entry.name }}
+        <span class="filehex">{{ entry.hex|short }}</span>
+        </a>
+    </li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+{% endif %} {% else %} No content found in this repository {% endif %} {% endblock %}

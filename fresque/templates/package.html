@@ -20,6 +20,11 @@ Package "{{ package.name }}"
 <div class="package-attributes">
     <p><strong>Summary:</strong> {{ package.summary }}</p>
     <p><strong>Description:</strong> {{ package.description }}</p>
+    <a class="btn btn-primary btn-sm" href="{{ url_for('repo_base_view', packagename=package.name) }}">
+        <span class="glyphicon glyphicon-link"></span>
+        Git Web
+    </a>
+
 </div>
 
 <hr />
