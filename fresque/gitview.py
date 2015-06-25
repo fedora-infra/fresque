@@ -154,15 +154,14 @@ def view_raw_file(repo, identifier, filename):
 
     repo_obj = get_repo_by_name(repo)
 
-    ref, path, tree, file = repo_obj.split_ref(
-        repo, refpath, expects_file=True)
+    ref, path, tree, file = repo_obj.split_ref(refpath, expects_file=True)
 
     if not ref:
         raise IOError("No such file")
 
     # Try to detect the mimetype
     mimetype, encoding = mimetypes.guess_type(file.name)
-    data = repo[file.hex].data
+    data = repo_obj[file.hex].data
     # shbang'ed: text/plain will do
     if not mimetype and data[:2] == '#!':
         mimetype = 'text/plain'

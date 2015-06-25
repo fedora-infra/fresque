@@ -1,7 +1,7 @@
 {% extends 'layout.html' %} {% import 'macros.html' as macros %} {% block git %} {% include "/git/git_layout.html" %} {% endblock %} {% block content%}
 
 <ul class="breadcrumb">
-    <li><a href="#"><strong>{{repo}}</strong></a></li>
+    <li><a href="{{url_for('repo_base_view', packagename=repo)}}"><strong>{{repo}}</strong></a></li>
     <li class="active">
     {% for file in filename.split('/') %}
         {% if loop.first %}
@@ -30,7 +30,9 @@
         <a class="btn btn-primary" href="{{ url_for('view_file',
                     repo=repo, identifier=branchname,
                     filename=filename) }}" title="View as blob">Blob</a>
-        <a  class="btn btn-primary" href="#" title="View as raw">Raw</a>
+        <a  class="btn btn-primary" href="{{ url_for('view_raw_file',
+                    repo=repo, identifier=branchname,
+                     filename=filename) }}" title="View as raw">Raw</a>
       </div>
     </div>
     <div class="panel-body">
