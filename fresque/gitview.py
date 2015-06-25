@@ -219,3 +219,51 @@ def view_raw_file(repo, identifier, filename):
         headers['Content-Encoding'] = encoding
 
     return (data, 200, headers)
+
+
+@APP.route('/git/<repo>/tree/')
+@APP.route('/git/<repo>/tree/<identifier>')
+def view_tree(repo, identifier=None):
+    """ Render the tree of the repo
+    """
+
+    try:
+        repo_obj = get_repo_by_name(repo)
+    except IOError:
+        return "No such repo", 404
+
+    if repo is None:
+        flask.abort(404, 'Project not found')
+
+    branchname = None
+    content = None
+    output_type = None
+    if not repo_obj.is_empty:
+        if identifier in repo_obj.listall_branches():
+            branchname = identifier
+            branch = repo_obj.lookup_branch(identifier)
+            commit = branch.get_object()
+        else:
+            try:
+                commit = repo_obj.get(identifier)
+                branchname = identifier
+            except (ValueError, TypeError):
+                # If it's not a commit id then it's part of the filename
+                commit = repo_obj[repo_obj.head.target]
+                branchname = 'master'
+
+        content = sorted(commit.tree, key=lambda x: x.filemode)
+        output_type = 'tree'
+
+    return flask.render_template(
+        '/git/repo.html',
+        select='files',
+        repo_obj=repo_obj,
+        repo=repo,
+        branches=sorted(repo_obj.listall_branches()),
+        username=flask.g.fas_user.username,
+        branchname=branchname,
+        tree=content,
+        output_type=output_type,
+        last_commit=repo_obj.get_last_commit()
+    )
