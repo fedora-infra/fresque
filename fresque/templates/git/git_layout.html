@@ -31,8 +31,13 @@
 {% if last_commit %}
 <div class="alert alert-info">
     <strong> {{last_commit.message}} </strong>
-    <br>
+    <br/>
     <span class="text-muted">{{last_commit.author.name}}</span>
-    <a href="#" class="pull-right text-muted">Latest commit</span> <span style="color:#333;">{{last_commit.oid}}</span></a>
+    <a href="#" class="pull-right text-muted">
+        Latest commit
+        <span style="color:#333;">
+            {{last_commit.oid}}
+        </span>
+    </a>
 </div>
 {% endif %}

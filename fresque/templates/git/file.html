@@ -39,32 +39,45 @@
 {% if output_type=='file' %} {% autoescape false %}
             {{ content | safe}}
             {% endautoescape %}
-{% elif output_type == 'image' %}
-     <img src="#" />
 {% elif output_type == 'binary' %}
-    <p class="noresult">
+    <p>
       Binary files cannot be rendered.
-    <br/> Please
-        <a href="#">view the raw version
+        <br/> Please
+        <a href="{{url_for('view_raw_file', repo=repo, identifier=branchname,
+                     filename=filename) }}">
+            view the raw version
         </a>
     </p>
     </div>
 </div>
-{% else %}
-
-<h3>Tree</h3>
-  <ul>
-    {% for entry in content %}
-    <li class="{% if entry.filemode == 16384 %}folder{% else %}file{% endif %}">
-      <a href="{{ url_for('view_file',
-                repo=repo, identifier=branchname,
-                filename=filename + '/' + entry.name if filename else entry.name) }}">
-        {{ entry.name }}
-        <span class="filehex">{{ entry.hex|short }}</span>
-        </a>
-    </li>
-    {% endfor %}
-  </ul>
 {% endif %}
 
-{% endif %} {% else %} No content found in this repository {% endif %} {% endblock %}
+{% else %}
+  <table class="table table-hover">
+    <thead>
+        <tr>
+            <th width="150">Filename</th>
+            <th width="150">Last Change</th>
+            <th>Last commit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in content %}
+        <tr>
+            <td>
+                <i class="glyphicon glyphicon-{% if entry.filemode == 16384 %}folder-close{% else %}list-alt{% endif %}"></i>
+                <a href="{{ url_for('view_file',
+                repo=repo, identifier=branchname,
+                filename=filename + '/' + entry.name if filename else entry.name) }}">
+              {{ entry.name }}
+            </a>
+            </td>
+            <td> An hour Ago </td>
+            <td><a href="#"> {{ entry.hex|short }} </a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% else %} No content found in this repository {% endif %} {% endblock %}
