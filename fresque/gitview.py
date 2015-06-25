@@ -148,7 +148,7 @@ def view_file(repo, identifier, filename):
     )
 
 
-@APP.route('/git/<repo>/raw/<identifier>/<filename>')
+@APP.route('/git/<repo>/raw/<path:identifier>/f/<path:filename>')
 def view_raw_file(repo, identifier, filename):
     refpath = os.path.join(identifier, filename)
 
