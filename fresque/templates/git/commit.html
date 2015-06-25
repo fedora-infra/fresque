@@ -1,0 +1,34 @@
+{% extends 'layout.html' %}
+{% import 'macros.html' as macros %}
+
+{% block git %}
+    {% include "/git/git_layout.html" %}
+{% endblock %}
+
+{% block content%}
+
+
+{% for patch in diff %}
+    <p>Changes in
+        <strong> {{ patch.new_file_path }} </strong> with
+        {% if not patch.is_binary and (patch.additions + patch.deletions) > 0%}
+            <strong> {% if patch.additions > 0 %}+{{ patch.additions }} {% else %} 0 {% endif %} additions </strong> and
+            <strong> {% if patch.deletions > 0 %}-{{ patch.deletions }}{% else %} 0 {% endif %} deletions</strong>
+        {% endif %}
+    </p>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {{  patch.new_file_path }}
+        </div>
+        <div class="panel-body">
+        {% if patch.is_binary %}
+            <p class="noresult">Binary diffs cannot be rendered.</p>
+        {% else %}
+            {% autoescape false %}
+            {{ patch|patch_to_diff|html_diff}}
+            {% endautoescape %}
+        {% endif %}
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
