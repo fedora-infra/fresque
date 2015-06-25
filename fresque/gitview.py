@@ -11,6 +11,7 @@ import flask
 import pygit2
 import fresque
 
+from math import ceil
 import kitchen.text.converters as ktc
 
 from pygments import highlight
@@ -264,5 +265,122 @@ def view_tree(repo, identifier=None):
         branchname=branchname,
         tree=content,
         output_type=output_type,
+        last_commit=repo_obj.get_last_commit()
+    )
+
+
+@APP.route('/git/<repo>/commits/<branchname>/')
+@APP.route('/git/<repo>/commits/<branchname>')
+def view_commit_list(repo, branchname=None):
+    """ Render a commit in a repo
+    """
+    """ Displays the commits of the specified repo.
+    """
+
+    if not repo:
+        flask.abort(404, 'Project not found')
+
+    repo_obj = get_repo_by_name(repo)
+
+    if branchname and branchname not in repo_obj.listall_branches():
+        flask.abort(404, 'Branch no found')
+
+    if branchname:
+        branch = repo_obj.lookup_branch(branchname)
+    else:
+        branch = repo_obj.lookup_branch('master')
+
+    try:
+        page = int(flask.request.args.get('page', 1))
+    except ValueError:
+        page = 1
+
+    limit = 10
+    start = limit * (page - 1)
+    end = limit * page
+
+    n_commits = 0
+    last_commits = []
+    if branch:
+        for commit in repo_obj.walk(
+                branch.get_object().hex, pygit2.GIT_SORT_TIME):
+            if n_commits >= start and n_commits <= end:
+                last_commits.append(commit)
+            n_commits += 1
+
+    total_page = int(ceil(n_commits / float(limit)))
+
+    diff_commits = []
+    if not repo_obj.is_empty and repo_obj.listall_branches() > 1:
+
+        master_branch = repo_obj.lookup_branch('master')
+        master_commits = []
+
+        if master_branch:
+            master_commits = [
+                commit.oid.hex
+                for commit in repo_obj.walk(
+                    master_branch.get_object().hex,
+                    pygit2.GIT_SORT_TIME)
+            ]
+
+        if branch:
+            repo_commit = repo_obj[branch.get_object().hex]
+
+            for commit in repo_obj.walk(
+                    repo_commit.oid.hex, pygit2.GIT_SORT_TIME):
+                if commit.oid.hex in master_commits:
+                    break
+                diff_commits.append(commit.oid.hex)
+
+    return flask.render_template(
+        '/git/commits.html',
+        select='commits',
+        repo_obj=repo_obj,
+        repo=repo,
+        branches=sorted(repo_obj.listall_branches()),
+        branchname=branchname,
+        last_commits=last_commits,
+        diff_commits=diff_commits,
+        page=page,
+        total_page=total_page,
+        last_commit=repo_obj.get_last_commit()
+    )
+
+
+@APP.route('/git/<repo>/<commitid>/')
+@APP.route('/git/<repo>/<commitid>')
+def view_commit(repo, commitid):
+    """ Render a commit in a repo
+    """
+    if not repo:
+        flask.abort(404, 'Project not found')
+
+    repo_obj = get_repo_by_name(repo)
+
+    try:
+        commit = repo_obj.get(commitid)
+    except ValueError:
+        flask.abort(404, 'Commit not found')
+
+    if commit is None:
+        flask.abort(404, 'Commit not found')
+
+    if commit.parents:
+        diff = commit.tree.diff_to_tree()
+
+        parent = repo_obj.revparse_single('%s^' % commitid)
+        diff = repo_obj.diff(parent, commit)
+    else:
+        # First commit in the repo
+        diff = commit.tree.diff_to_tree(swap=True)
+
+    return flask.render_template(
+        '/git/commit.html',
+        select='files',
+        repo=repo,
+        commitid=commitid,
+        commit=commit,
+        diff=diff,
         last_commit=repo_obj.get_last_commit()
     )
