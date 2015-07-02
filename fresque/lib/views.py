@@ -17,6 +17,7 @@ from __future__ import absolute_import, unicode_literals, print_function
 import os
 import pygit2
 import json
+import fresque
 from time import time
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -88,7 +89,7 @@ def newpackage(db, method, data, username, gitfolder):
                 status_message = create_git_repo(pkg.name, gitfolder)
                 result.flash.append((
                     status_message, "success"))
-            except (GitError, IOError):
+            except fresque.exceptions.FresqueException:
                 result.flash.append(("An error occurred while creating git \
                     repository, please contact an administrator.", "danger"))
 
@@ -121,7 +122,10 @@ def create_git_repo(name, gitfolder):
     gitrepo = os.path.join(gitfolder, '%s.git' % name)
 
     if os.path.exists(gitrepo):
-        raise IOError('The project git repo "%s" already exists' % name)
+        raise fresque.exceptions.RepoExistsException(
+            'The project named "%s" already have '
+            'a git repository' % name
+        )
     # create a bare git repository
     pygit2.init_repository(gitrepo, bare=True)
     return 'Successfully created Project {0} git respository'.format(name)
