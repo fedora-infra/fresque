@@ -1,4 +1,11 @@
-{% extends 'layout.html' %} {% import 'macros.html' as macros %} {% block git %} {% include "/git/git_layout.html" %} {% endblock %} {% block content%}
+{% extends 'layout.html' %}
+{% import 'macros.html' as macros %}
+
+{% block git %}
+    {% include "/git/git_layout.html" %}
+{% endblock %}
+
+{% block content%}
 
 <ul class="breadcrumb">
     <li><a href="{{url_for('repo_base_view', packagename=repo)}}"><strong>{{repo}}</strong></a></li>
@@ -80,4 +87,7 @@
 </table>
 {% endif %}
 
-{% else %} No content found in this repository {% endif %} {% endblock %}
+{% else %}
+    No content found in this repository
+{% endif %}
+{% endblock %}
