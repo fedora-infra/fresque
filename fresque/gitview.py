@@ -13,7 +13,6 @@ import fresque
 
 import kitchen.text.converters as ktc
 
-from sqlalchemy.orm import aliased
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import guess_lexer_for_filename
