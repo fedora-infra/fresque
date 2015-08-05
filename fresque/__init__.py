@@ -16,7 +16,7 @@ import flask_fas_openid
 APP = flask.Flask(__name__)
 
 APP.config.from_object('fresque.default_config')
-if 'FRESQUE_CONFIG' in os.environ: # pragma: no cover
+if 'FRESQUE_CONFIG' in os.environ:  # pragma: no cover
     APP.config.from_envvar('FRESQUE_CONFIG')
 
 # Set up FAS extension
@@ -37,8 +37,8 @@ APP.wsgi_app = fresque.proxy.ReverseProxied(APP.wsgi_app)
 
 
 # Database
-
 from fresque.lib.database import create_session, DatabaseNeedsUpgrade
+
 
 @APP.before_request
 def before_request():
@@ -49,6 +49,7 @@ def before_request():
             message="The database schema must be upgraded "
                     "by the administrator",
             ), 500
+
 
 @APP.teardown_appcontext
 def shutdown_session(exception=None): # pylint: disable=unused-argument
