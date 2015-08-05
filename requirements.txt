@@ -2,10 +2,14 @@ alembic
 Flask
 Flask-WTF
 MarkupSafe
+pygit2
 python-fedora
 python-openid
 python-openid-cla
 python-openid-teams
 six
 SQLAlchemy
+chardet
+arrow
+pygments
 

@@ -6,6 +6,7 @@ Views for the fresque flask application
 
 from __future__ import absolute_import, unicode_literals, print_function
 
+import os
 import flask
 from flask.ext.fas import fas_login_required
 from six import string_types
@@ -50,9 +51,11 @@ def newreview(pname):
 @APP.route("/new", methods=["GET", "POST"])
 @fas_login_required
 def newpackage():
+    # create git folder path
+    gitfolder = os.path.join(APP.config['GIT_DIRECTORY_PATH'], flask.g.fas_user.username)
     result = views.newpackage(
         flask.g.db, flask.request.method, flask.request.form,
-        flask.g.fas_user.username)
+        flask.g.fas_user.username, gitfolder)
     return handle_result(result, 'new.html')
 
 

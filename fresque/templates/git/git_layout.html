@@ -1,0 +1,43 @@
+{% block todc %}
+    <!-- Add todc bootstrap in later stage -->
+{% endblock %}
+
+<div class="navbar navbar-toolbar">
+    <ul class="nav navbar-nav">
+        <li class="dropdown">
+            <a data-toggle="dropdown" class="navbar-brand dropdown-toggle" href="#">
+                 {% if branchname %} {{branchname}} {% else %} master {% endif %}
+                    <b class="caret"></b>
+                </a>
+            <ul class="navbar-brand dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+            {% for branch in branches %}
+                <li>
+                    <a href="#" tabindex="-1">
+                        <strong> {{ branch }} </strong>
+                    </a>
+                </li>
+            {% endfor %}
+            </ul>
+        </li>
+    </ul>
+    <ul class="nav navbar-nav">
+        <li class="{% if select == 'files' %}active{% endif %}"><a href="#">Files</a></li>
+        <!-- change branchname according to selection -->
+        <li class="{% if select == 'commits' %}active{% endif %}"><a href="#">Commits</a></li>
+        <li "{% if select == 'tags' %}active{% endif %}"><a href="#">Tags</a></li>
+    </ul>
+</div>
+
+{% if last_commit %}
+<div class="alert alert-info">
+    <strong> {{last_commit.message}} </strong>
+    <br/>
+    <span class="text-muted">{{last_commit.author.name}}</span>
+    <a href="#" class="pull-right text-muted">
+        Latest commit
+        <span style="color:#333;">
+            {{last_commit.oid}}
+        </span>
+    </a>
+</div>
+{% endif %}

@@ -10,7 +10,6 @@ from six.moves import urllib_parse as urlparse
 
 import flask
 from six import string_types
-
 from fresque import APP
 
 

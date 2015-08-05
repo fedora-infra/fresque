@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+{% import 'macros.html' as macros %}
+
+{% block git %}
+    {% include "/git/git_layout.html" %}
+{% endblock %}
+
+{% block content%}
+
+<ul class="breadcrumb">
+    <li><a href="{{url_for('repo_base_view', packagename=repo)}}"><strong>{{repo}}</strong></a></li>
+    <li class="active">
+    {% for file in filename.split('/') %}
+        {% if loop.first %}
+            {% set path = file %}
+        {% else %}
+            {% set path = path + '/' + file %}
+        {% endif %}
+    {% if loop.index != loop.length %}
+        <a href="{{ url_for('view_file', repo=repo, identifier=branchname,
+            filename=path)}}">
+            {{ file }}
+        </a>/
+    {% else %}
+       {{ file }}
+    {% endif %}
+
+    {% endfor %}
+    </li>
+</ul>
+
+{% if content %}
+{% if output_type == 'file' or output_type == 'binary' %}
+<div class="panel panel-default">
+    <div class="panel-heading clearfix">
+      <div class="pull-right">
+        <a class="btn btn-primary" href="{{ url_for('view_file',
+                    repo=repo, identifier=branchname,
+                    filename=filename) }}" title="View as blob">Blob</a>
+        <a  class="btn btn-primary" href="{{ url_for('view_raw_file',
+                    repo=repo, identifier=branchname,
+                     filename=filename) }}" title="View as raw">Raw</a>
+      </div>
+    </div>
+    <div class="panel-body">
+{% if output_type=='file' %} {% autoescape false %}
+            {{ content | safe}}
+            {% endautoescape %}
+{% elif output_type == 'binary' %}
+    <p>
+      Binary files cannot be rendered.
+        <br/> Please
+        <a href="{{url_for('view_raw_file', repo=repo, identifier=branchname,
+                     filename=filename) }}">
+            view the raw version
+        </a>
+    </p>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+  <table class="table table-hover">
+    <thead>
+        <tr>
+            <th width="150">Filename</th>
+            <th width="150">Last Change</th>
+            <th>Last commit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in content %}
+        <tr>
+            <td>
+                <i class="glyphicon glyphicon-{% if entry.filemode == 16384 %}folder-close{% else %}list-alt{% endif %}"></i>
+                <a href="{{ url_for('view_file',
+                repo=repo, identifier=branchname,
+                filename=filename + '/' + entry.name if filename else entry.name) }}">
+              {{ entry.name }}
+            </a>
+            </td>
+            <td> An hour Ago </td>
+            <td><a href="#"> {{ entry.hex|short }} </a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+
+{% else %}
+    No content found in this repository
+{% endif %}
+{% endblock %}
