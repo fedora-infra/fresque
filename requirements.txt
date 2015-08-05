@@ -10,5 +10,5 @@ six
 SQLAlchemy
 chardet
 arrow
-
+pygments
 
