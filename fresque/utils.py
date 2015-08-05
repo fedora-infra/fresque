@@ -6,7 +6,7 @@ Some Flask-specific utility functions.
 
 from __future__ import absolute_import, unicode_literals, print_function
 
-import urlparse
+from six.moves import urllib_parse as urlparse
 
 import flask
 from six import string_types
