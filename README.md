@@ -1,6 +1,8 @@
+[![Build Status](https://travis-ci.org/fedora-infra/fresque.svg?branch=master)](https://travis-ci.org/fedora-infra/fresque)
+
 Fresque
 =======
-Fedora Review Server  [![Build Status](https://travis-ci.org/fedora-infra/fresque.svg?branch=master)](https://travis-ci.org/fedora-infra/fresque)
+Fedora Review Server  
 
 Installation
 ----------------
