@@ -272,9 +272,8 @@ def view_tree(repo, identifier=None):
 @APP.route('/git/<repo>/commits/<branchname>/')
 @APP.route('/git/<repo>/commits/<branchname>')
 def view_commit_list(repo, branchname=None):
-    """ Render a commit in a repo
-    """
-    """ Displays the commits of the specified repo.
+    """ Render a commit in a repo and
+        displays the commits of the specified repo.
     """
 
     if not repo:
