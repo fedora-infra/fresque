@@ -2,7 +2,7 @@ alembic
 Flask
 Flask-WTF
 MarkupSafe
-pygit2
+pygit2==0.22.0
 python-fedora
 python-openid
 python-openid-cla
@@ -12,4 +12,3 @@ SQLAlchemy
 chardet
 arrow
 pygments
-
