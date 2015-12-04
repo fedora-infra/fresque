@@ -2,7 +2,7 @@
 
 Fresque
 =======
-Fedora Review Server  
+Fedora Review Server
 
 Installation
 ----------------
@@ -21,7 +21,7 @@ Fresque is a [Flask] application. The review data is stored into a relational da
 using [SQLAlchemy] as Object Relational Mapper and [alembic] to handle database
 schema changes.
 
-The dependecies can be found in the `requirements.txt` file of the project
+The dependecies can be found in [requirements.txt](https://github.com/fedora-infra/fresque/blob/master/requirements.txt)
 
 Running a development instance:
 -------------------------------
@@ -31,20 +31,14 @@ after that install [virtualenv wrapper] which provides better CLI interface
 for the [virtualenv].
 
 ```bash
-	$ pip install virtualenv
-	$ pip install virtualwrapper
+	$ yum install python-virtualenv
+	$ yum install python-virtualenvwrapper
 ```
-Then setup the path for the virtualenv by adding below lines
-in your `bashrc` file.
+*Note: If you are using fedora >= 22, use `dnf` instead of `yum`*
 
-```bash
- 	export WORKON_HOME=$HOME/.virtualenvs
-  	export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
-  	export PIP_VIRTUALENV_BASE=$WORKON_HOME
-  	source /usr/local/bin/virtualenvwrapper.sh
-```
-after the bash profile setup, now you can create a seperate
-virtualenv for this project.
+Close and reopen your terminal.
+
+Create a seperate virtualenv for this project.
 
 ```bash
 	// create a virtualenv named fresque
@@ -83,4 +77,3 @@ This project is licensed GPLv3+.
 [alembic]:https://bitbucket.org/zzzeek/alembic
 [virtualenv]:https://virtualenv.pypa.io/en/latest/
 [virtualenv wrapper]:https://virtualenvwrapper.readthedocs.org/en/latest/
-
