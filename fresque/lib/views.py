@@ -18,6 +18,7 @@ import os
 import pygit2
 import json
 import fresque
+import fresque.exceptions
 from time import time
 
 from sqlalchemy.exc import SQLAlchemyError
