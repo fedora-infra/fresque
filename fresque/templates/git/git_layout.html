@@ -23,7 +23,7 @@
     <ul class="nav navbar-nav">
         <li class="{% if select == 'files' %}active{% endif %}"><a href="#">Files</a></li>
         <!-- change branchname according to selection -->
-        <li class="{% if select == 'commits' %}active{% endif %}"><a href="#">Commits</a></li>
+        <li class="{% if select == 'commits' %}active{% endif %}"><a href="{{url_for('view_commit_list', repo=repo, branchname='master')}}">Commits</a></li>
         <li "{% if select == 'tags' %}active{% endif %}"><a href="#">Tags</a></li>
     </ul>
 </div>

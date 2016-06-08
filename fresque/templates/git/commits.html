@@ -1,0 +1,39 @@
+{% extends 'layout.html' %} {% import 'macros.html' as macros %} {% block git %} {% include "/git/git_layout.html" %} {% endblock %} {% block content %}
+<ul class="breadcrumb">
+    <li><a href="#"><strong>{{repo}}</strong></a></li>
+    <li class="active">commits</li>
+</ul>
+
+{% set count = last_commits|length %}
+{% for commit in last_commits %}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <span> {{count}}. </span>
+        {{ commit.commit_time | strftime("%b %d, %Y")}}
+    </div>
+    {% set count = count - 1 %}
+    <div class="panel-body">
+
+        <strong> {{commit.message}} </strong>
+        <br> {{commit.committer.name}}
+        <span class="text-muted"> authored {{commit.committer.time | humanize}} </span>
+        <a href="{{url_for('view_commit', repo=repo, commitid=commit.oid)}}">
+            <span> {{commit.oid}} </span>
+        </a>
+        <span class="glyphicon glyphicon-chevron-right"></span>
+
+    </div>
+</div>
+{% endfor %}
+<ul class="pager">
+    {% if 1 == 1 %}
+    <li class="disabled"><span>Newer</span></li>
+    {% else %}
+    <li><a href="#">Newer</a></li>
+    {% endif %} {% if 1 == 2 %}
+    <li><a href="#">Older</a></li>
+    {% else %}
+    <li class="disabled"><span>Older</span></li>
+    {% endif %}
+</ul>
+{% endblock %}
